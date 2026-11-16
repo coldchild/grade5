@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>五上學習</title>
+<style>
+  :root{
+    --bg:#f6f4ef; --card:#fff; --ink:#2b2a27; --muted:#77736a;
+    --accent:#2f6f5e; --accent-soft:#e3efe9; --line:#e4e0d6;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif}
+  header{padding:40px 24px 16px;max-width:1100px;margin:0 auto}
+  h1{margin:0 0 6px;font-size:32px;letter-spacing:.04em}
+  .sub{color:var(--muted);margin:0}
+  .bar{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap}
+  .bar input{flex:1;min-width:200px;padding:12px 14px;font-size:16px;border:1px solid var(--line);
+    border-radius:10px;background:#fff;outline:none}
+  .bar input:focus{border-color:var(--accent)}
+  .bar button{padding:0 16px;font-size:15px;border:1px solid var(--line);border-radius:10px;
+    background:#fff;cursor:pointer;color:var(--ink)}
+  .bar button:hover{border-color:var(--accent);color:var(--accent)}
+  main{max-width:1100px;margin:0 auto;padding:8px 24px 60px}
+  section{margin-top:28px}
+  section h2{font-size:18px;margin:0 0 12px;padding-bottom:6px;border-bottom:2px solid var(--line);
+    color:var(--accent);display:flex;align-items:baseline;gap:8px}
+  section h2 small{color:var(--muted);font-weight:normal;font-size:13px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+  a.card{display:block;padding:16px 18px;background:var(--card);border:1px solid var(--line);
+    border-radius:12px;text-decoration:none;color:var(--ink);transition:.15s}
+  a.card:hover{border-color:var(--accent);background:var(--accent-soft);transform:translateY(-2px)}
+  a.card .t{font-size:17px;font-weight:600;line-height:1.4}
+  a.card .f{font-size:12px;color:var(--muted);margin-top:6px;word-break:break-all}
+  .msg{padding:20px;background:#fff;border:1px dashed var(--line);border-radius:12px;color:var(--muted);line-height:1.7}
+  .msg code{background:#f1eee7;padding:2px 6px;border-radius:4px}
+</style>
+</head>
+<body>
+<header>
+  <h1 id="siteTitle">五上學習</h1>
+  <p class="sub" id="status">讀取中…</p>
+  <div class="bar">
+    <input id="q" type="search" placeholder="搜尋網頁名稱…">
+    <button id="refresh" title="重新抓取最新清單">↻ 重新整理清單</button>
+  </div>
+</header>
+<main id="list"></main>
+
+<script>
+/* ===== 設定（通常不用改） =====================================
+   放在 GitHub Pages 上會自動判斷帳號和 repo。
+   如果用了自訂網域，或想在本機測試，才需要手動填 OWNER / REPO。 */
+const CONFIG = {
+  OWNER: "",            // 例："coldchild"
+  REPO: "",             // 例："teaching"
+  BRANCH: "HEAD",       // 預設分支；用其他分支發布才要改
+  SITE_TITLE: "五上學習",
+  EXCLUDE: [/^index\.html$/i, /(^|\/)[._]/, /(^|\/)(assets|node_modules)\//i],  // 不要列出的檔案
+  ROOT_GROUP: "首頁資料夾",  // 根目錄網頁的分組名稱
+};
+/* ============================================================ */
+
+const $ = s => document.querySelector(s);
+const statusEl = $("#status"), listEl = $("#list");
+document.title = CONFIG.SITE_TITLE; $("#siteTitle").textContent = CONFIG.SITE_TITLE;
+
+function detectRepo(){
+  if (CONFIG.OWNER && CONFIG.REPO) return {owner:CONFIG.OWNER, repo:CONFIG.REPO};
+  const host = location.hostname;
+  if (!host.endsWith(".github.io")) return null;
+  const owner = host.split(".")[0];
+  const first = location.pathname.split("/").filter(Boolean)[0];
+  const repo = (first && !/\.html?$/i.test(first)) ? decodeURIComponent(first) : `${owner}.github.io`;
+  return {owner, repo};
+}
+
+const store = {
+  get(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(e){ return null; } },
+  set(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+};
+
+async function getTree(owner, repo, force){
+  const key = `tree:${owner}/${repo}`;
+  const cached = store.get(key);
+  if (!force && cached && Date.now() - cached.time < 2*60*1000) return cached.files;
+  const url = `https://api.github.com/repos/${owner}/${repo}/git/trees/${CONFIG.BRANCH}?recursive=1`;
+  const res = await fetch(url, {headers:{Accept:"application/vnd.github+json"}});
+  if (!res.ok){
+    if (cached) return cached.files;            // API 暫時不能用時，先用上次的清單
+    if (res.status === 403) throw new Error("GitHub 查詢次數暫時用完（每小時 60 次），請稍後再試。");
+    if (res.status === 404) throw new Error(`找不到 repo「${owner}/${repo}」，請確認它是公開的。`);
+    throw new Error(`GitHub 回應錯誤（${res.status}）`);
+  }
+  const data = await res.json();
+  const files = data.tree
+    .filter(t => t.type === "blob" && /\.html?$/i.test(t.path))
+    .filter(t => !CONFIG.EXCLUDE.some(re => re.test(t.path)))
+    .map(t => ({path:t.path, sha:t.sha}));
+  store.set(key, {time:Date.now(), files});
+  return files;
+}
+
+async function getTitle(f){
+  const key = `title:${f.sha}`;          // 檔案內容沒變就不用重抓
+  const cached = store.get(key);
+  if (cached) return cached;
+  let title = "";
+  try{
+    const res = await fetch(encodeURI(f.path), {cache:"no-cache"});
+    if (res.ok){
+      const doc = new DOMParser().parseFromString(await res.text(), "text/html");
+      title = (doc.querySelector("title")?.textContent || doc.querySelector("h1")?.textContent || "").trim();
+    }
+  }catch(e){}
+  if (title) store.set(key, title);
+  return title;
+}
+
+const baseName = p => p.split("/").pop().replace(/\.html?$/i, "");
+const cmp = (a,b) => a.localeCompare(b, "zh-Hant", {numeric:true});
+
+let pages = [];
+function render(){
+  const q = $("#q").value.trim().toLowerCase();
+  const shown = pages.filter(p => !q || (p.title + " " + p.path).toLowerCase().includes(q));
+  const groups = {};
+  for (const p of shown){
+    const dir = p.path.includes("/") ? p.path.slice(0, p.path.lastIndexOf("/")) : "";
+    (groups[dir] ||= []).push(p);
+  }
+  const dirs = Object.keys(groups).sort((a,b) => (a===""?-1:b===""?1:cmp(a,b)));
+  listEl.innerHTML = "";
+  if (!shown.length){
+    listEl.innerHTML = `<div class="msg">${pages.length ? "沒有符合的網頁。" : "repo 裡還沒有其他網頁，上傳 .html 檔之後重新整理就會出現。"}</div>`;
+    return;
+  }
+  for (const dir of dirs){
+    const sec = document.createElement("section");
+    const h = document.createElement("h2");
+    h.textContent = dir ? dir.replaceAll("/", " › ") : CONFIG.ROOT_GROUP;
+    const small = document.createElement("small"); small.textContent = `${groups[dir].length} 頁`;
+    h.appendChild(small); sec.appendChild(h);
+    const grid = document.createElement("div"); grid.className = "grid";
+    for (const p of groups[dir].sort((a,b) => cmp(a.path, b.path))){
+      const a = document.createElement("a");
+      a.className = "card"; a.href = encodeURI(p.path);
+      a.innerHTML = `<div class="t"></div><div class="f"></div>`;
+      a.querySelector(".t").textContent = p.title || baseName(p.path);
+      a.querySelector(".f").textContent = p.path;
+      grid.appendChild(a);
+    }
+    sec.appendChild(grid); listEl.appendChild(sec);
+  }
+}
+
+async function load(force){
+  const r = detectRepo();
+  if (!r){
+    statusEl.textContent = "";
+    listEl.innerHTML = `<div class="msg">這個首頁要放在 GitHub Pages 上才會自動列出網頁。<br>
+      如果用了自訂網域或在本機測試，請打開 index.html，在最上面的 <code>CONFIG</code> 填入 <code>OWNER</code> 和 <code>REPO</code>。</div>`;
+    return;
+  }
+  statusEl.textContent = "讀取中…";
+  try{
+    const files = await getTree(r.owner, r.repo, force);
+    pages = files.map(f => ({...f, title:""}));
+    render();
+    statusEl.textContent = `共 ${pages.length} 個網頁`;
+    await Promise.all(pages.map(async p => { p.title = await getTitle(p); }));
+    render();
+  }catch(e){
+    statusEl.textContent = "";
+    listEl.innerHTML = `<div class="msg">${e.message}</div>`;
+  }
+}
+
+$("#q").addEventListener("input", render);
+$("#refresh").addEventListener("click", () => load(true));
+load(false);
+</script>
+</body>
+</html>
