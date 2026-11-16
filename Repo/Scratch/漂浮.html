@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>漂浮開始按鈕｜Scratch 五關教學</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#E9EFF7; --ink:#1D2B4F; --ink2:#4A5878; --line:#C9D4E5; --stage:#FFFFFF;
+  --glow:#FFD43B;
+  --ev:#FFBF00; --ev-d:#CC9900; --mo:#4C97FF; --mo-d:#3373CC; --lk:#9966FF; --lk-d:#774DCB;
+  --ct:#FFAB19; --ct-d:#CF8B17; --se:#5CB1D6; --se-d:#2E8EB8; --op:#59C059; --op-d:#389438;
+  --pn:#0FBD8C; --pn-d:#0B8E69;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--paper);color:var(--ink);font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;font-size:19px;line-height:1.65}
+button{font:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--mo);outline-offset:2px}
+
+/* top bar */
+header{position:sticky;top:0;z-index:5;background:var(--ink);color:#fff;padding:10px 20px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+header h1{font-size:20px;font-weight:900;margin:0;letter-spacing:.02em;white-space:nowrap}
+nav{display:flex;gap:6px;flex-wrap:wrap}
+nav button{background:transparent;color:#C9D4E5;border:2px solid #3A4A70;border-radius:999px;padding:4px 14px;font-size:16px;font-weight:700}
+nav button[aria-current="true"]{background:var(--ct);border-color:var(--ct);color:var(--ink)}
+nav button .k{display:inline-block;width:22px;height:22px;line-height:22px;border-radius:50%;background:#3A4A70;color:#fff;font-size:13px;text-align:center;margin-right:4px}
+nav button[aria-current="true"] .k{background:var(--ink)}
+
+main{max-width:1360px;margin:0 auto;padding:22px 20px 60px}
+.lvl{display:none}
+.lvl.show{display:block}
+.lvl-head{display:flex;align-items:flex-end;gap:16px;margin-bottom:14px;flex-wrap:wrap}
+.lvl-no{font-size:64px;font-weight:900;line-height:.9;color:var(--ct)}
+.lvl-head h2{font-size:34px;font-weight:900;margin:0;line-height:1.2}
+.lvl-head p{margin:2px 0 0;color:var(--ink2);font-size:19px}
+
+.grid{display:grid;grid-template-columns:minmax(0,600px) minmax(0,1fr);gap:22px;align-items:start}
+@media (max-width:1050px){.grid{grid-template-columns:minmax(0,1fr)}}
+.panel{background:#fff;border:2px solid var(--line);border-radius:14px;padding:16px}
+.panel h3{margin:0 0 10px;font-size:18px;font-weight:900;color:var(--ink2)}
+.code{background:#F9F9FB;border:2px solid var(--line);border-radius:14px;padding:16px;overflow-x:auto}
+
+/* scratch blocks */
+.b{width:fit-content;color:#fff;font-weight:700;font-size:15px;padding:7px 12px;border-radius:6px;border:1.5px solid rgba(0,0,0,.18);margin:2px 0;white-space:nowrap;display:flex;align-items:center;gap:5px;transition:box-shadow .15s}
+.b.ev{background:var(--ev);border-color:var(--ev-d);border-radius:22px 22px 6px 6px;padding-top:12px;color:#5a4100}
+.b.mo{background:var(--mo);border-color:var(--mo-d)}
+.b.lk{background:var(--lk);border-color:var(--lk-d)}
+.b.pn{background:var(--pn);border-color:var(--pn-d)}
+.b.ctb{background:var(--ct);border-color:var(--ct-d)}
+.c{width:fit-content;margin:2px 0}
+.c>.ch{background:var(--ct);border:1.5px solid var(--ct-d);border-bottom:0;color:#fff;font-weight:700;font-size:16px;padding:7px 12px;border-radius:6px 6px 0 6px;display:flex;align-items:center;gap:5px;white-space:nowrap;width:fit-content;min-width:160px}
+.c>.ch.mid{border-radius:0 6px 0 6px;border-top:0;min-width:90px}
+.c>.cb{border-left:18px solid var(--ct);padding:3px 0 3px 3px;min-height:26px}
+.c>.cf{background:var(--ct);border:1.5px solid var(--ct-d);border-top:0;height:20px;width:110px;border-radius:0 0 6px 6px;color:#fff;font-size:13px;text-align:right;padding-right:8px;line-height:18px}
+.r{display:inline-flex;align-items:center;gap:3px;border-radius:999px;padding:1px 6px;border:1.5px solid rgba(0,0,0,.15);color:#fff}
+.r.op{background:var(--op);border-color:var(--op-d)}
+.r.se{background:var(--se);border-color:var(--se-d)}
+.hx{display:inline-flex;align-items:center;padding:3px 16px;background:var(--se);color:#fff;clip-path:polygon(10px 0,calc(100% - 10px) 0,100% 50%,calc(100% - 10px) 100%,10px 100%,0 50%)}
+.n{display:inline-block;background:#fff;color:#333;border-radius:999px;padding:0 9px;min-width:30px;text-align:center;font-weight:700;transition:background .2s}
+.n.chg{background:#FFE9A8}
+.dd{background:rgba(0,0,0,.12);border-radius:4px;padding:0 6px}
+.flag{display:inline-block;width:18px;height:18px;vertical-align:-3px}
+.on{box-shadow:0 0 0 3px var(--glow),0 0 16px 4px rgba(255,212,59,.8)}
+.cb.on{box-shadow:inset 4px 0 0 var(--glow)}
+.cb.on>.b{box-shadow:0 0 0 3px var(--glow),0 0 12px 3px rgba(255,212,59,.7)}
+.cb.dim>.b,.cb.dim>.c{opacity:.45}
+.new{position:relative}
+.new::after{content:"新";position:absolute;right:-30px;top:50%;transform:translateY(-50%);background:#E8384F;color:#fff;font-size:12px;font-weight:900;border-radius:999px;padding:0 6px;line-height:20px}
+.sprite-tag{font-size:14px;font-weight:700;color:var(--ink2);margin:0 0 6px}
+
+/* stage */
+.stagewrap{position:relative}
+canvas.stage{width:100%;max-width:640px;aspect-ratio:4/3;display:block;background:var(--stage);border:2px solid var(--line);border-radius:12px;cursor:pointer;touch-action:none}
+.stagebar{display:flex;gap:8px;align-items:center;margin:0 0 8px;flex-wrap:wrap}
+.gbtn{background:#fff;border:2px solid var(--line);border-radius:10px;padding:4px 12px;font-size:16px;font-weight:700;color:var(--ink);display:inline-flex;align-items:center;gap:6px}
+.gbtn:hover{border-color:var(--ink2)}
+.gflag{width:18px;height:18px}
+
+.meters{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-top:12px}
+.m{background:var(--paper);border-radius:10px;padding:6px 10px}
+.m .k{font-size:13px;color:var(--ink2);font-weight:700}
+.m .v{font-size:22px;font-weight:900;font-variant-numeric:tabular-nums}
+
+.ctl{display:grid;grid-template-columns:auto minmax(0,1fr) 56px;gap:8px 12px;align-items:center;margin-top:6px}
+.ctl label{font-size:16px;font-weight:700;color:var(--ink2)}
+.ctl output{font-weight:900;font-size:18px;text-align:right;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--mo);height:26px}
+.tog{display:flex;gap:16px;flex-wrap:wrap;font-size:16px;font-weight:700;color:var(--ink2);margin-top:10px}
+.tog input{width:18px;height:18px;vertical-align:-3px;accent-color:var(--mo)}
+
+.say{font-size:20px;line-height:1.7;margin:0 0 10px}
+.say b{background:#FFF1C2;padding:0 4px;border-radius:4px}
+
+/* sin machine */
+.machine{margin-top:12px}
+.track{position:relative;height:44px;background:linear-gradient(90deg,#FFD9DE,#fff 50%,#D6F5DF);border:2px solid var(--line);border-radius:999px}
+.track .ball{position:absolute;top:50%;width:30px;height:30px;margin:-15px 0 0 -15px;border-radius:50%;background:var(--op);border:3px solid #fff;box-shadow:0 0 0 2px var(--op-d)}
+.track .tk{position:absolute;bottom:-24px;font-size:14px;font-weight:700;color:var(--ink2);transform:translateX(-50%)}
+.chain{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:32px;font-size:18px;font-weight:700}
+.chain .box{background:var(--paper);border-radius:8px;padding:2px 10px;font-variant-numeric:tabular-nums;min-width:64px;text-align:center}
+.chain .box.y{background:var(--mo);color:#fff}
+
+canvas.wave{width:100%;height:120px;display:block;background:#fff;border:2px solid var(--line);border-radius:10px;margin-top:8px}
+
+/* guesses */
+.guesses{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px;margin-top:22px}
+.guess{background:#fff;border:2px dashed var(--ct-d);border-radius:14px;padding:12px 14px}
+.guess .q{font-weight:900;margin:0 0 8px;font-size:18px}
+.guess .q::before{content:"猜猜看";display:inline-block;background:var(--ct);color:var(--ink);font-size:13px;border-radius:6px;padding:0 6px;margin-right:6px;vertical-align:2px}
+.guess .btns{display:flex;gap:8px;flex-wrap:wrap}
+.guess .a{margin:10px 0 0;background:#EAF8EE;border-radius:8px;padding:6px 10px;font-size:17px}
+.try{background:var(--mo);color:#fff;border:0;border-radius:8px;padding:4px 12px;font-weight:700;font-size:16px}
+.reveal{background:#fff;border:2px solid var(--line);border-radius:8px;padding:2px 12px;font-weight:700;font-size:16px;color:var(--ink)}
+
+details.tip{margin-top:18px;background:#fff;border-left:6px solid var(--lk);border-radius:0 12px 12px 0;padding:10px 16px}
+details.tip summary{font-weight:900;cursor:pointer;color:var(--lk-d)}
+details.tip ul{margin:8px 0 0;padding-left:22px;font-size:17px}
+
+.pager{display:flex;justify-content:space-between;margin-top:26px}
+.pager button{background:var(--ink);color:#fff;border:0;border-radius:12px;padding:10px 22px;font-weight:900;font-size:18px}
+.pager button[disabled]{visibility:hidden}
+
+/* lamps */
+.lamps{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px}
+.lamp{display:flex;align-items:center;gap:8px;font-weight:700;background:var(--paper);border-radius:999px;padding:4px 14px 4px 6px}
+.lamp i{width:24px;height:24px;border-radius:50%;background:#C9D4E5;display:inline-block;transition:background .15s}
+.lamp.yes i{background:#2FBF5B;box-shadow:0 0 10px #2FBF5B}
+
+.steps{list-style:none;padding:0;margin:12px 0 0;counter-reset:s}
+.steps li{counter-increment:s;padding:6px 10px 6px 44px;position:relative;border-radius:8px;font-weight:700;color:var(--ink2)}
+.steps li::before{content:counter(s);position:absolute;left:8px;top:6px;width:26px;height:26px;border-radius:50%;background:var(--line);color:var(--ink);text-align:center;line-height:26px;font-size:15px}
+.steps li.on{box-shadow:none;background:#FFF1C2;color:var(--ink)}
+.steps li.done::before{background:#2FBF5B;color:#fff;content:"✓"}
+
+table.ease{width:100%;border-collapse:collapse;margin-top:10px;font-variant-numeric:tabular-nums;font-size:17px}
+table.ease th,table.ease td{border-bottom:1px solid var(--line);padding:4px 6px;text-align:center}
+table.ease th{color:var(--ink2);font-size:15px}
+.bar{height:12px;background:var(--lk);border-radius:6px}
+
+.tasks{list-style:none;padding:0;margin:0}
+.tasks li{padding:6px 0;border-bottom:1px dashed var(--line);font-size:18px}
+.tasks input{width:20px;height:20px;vertical-align:-4px;margin-right:8px;accent-color:#2FBF5B}
+
+.hero-note{font-size:22px;font-weight:700;margin:0 0 12px}
+.legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;font-size:14px;font-weight:700}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.legend i{width:14px;height:14px;border-radius:4px;display:inline-block}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <h1>漂浮開始按鈕</h1>
+  <nav id="nav" aria-label="關卡"></nav>
+</header>
+<main id="main"></main>
+
+<script>
+/* ---------- block builders ---------- */
+const FLAG='<svg class="flag" viewBox="0 0 20 20"><path d="M4 2v17" stroke="#3a7d22" stroke-width="2.4"/><path d="M5 3c4-2 6 2 11 0v8c-5 2-7-2-11 0z" fill="#4CBF56" stroke="#3a7d22" stroke-width="1.2"/></svg>';
+const N=(k,v)=>`<span class="n" data-b="${k}">${v}</span>`;
+const n=v=>`<span class="n">${v}</span>`;
+const B={
+  hat:()=>`<div class="b ev">當 ${FLAG} 被點擊</div>`,
+  show:()=>`<div class="b lk">顯示</div>`,
+  go:(nw)=>`<div class="b mo${nw?' new':''}">定位到 x: ${n(0)} y: ${N('center',-95)}</div>`,
+  dir:(nw)=>`<div class="b mo${nw?' new':''}" data-k="dir">面朝 <span class="r op">${n(90)} + <span class="r op"><span class="r op"><span class="dd">cos ▾</span> 數值 <span class="r op"><span class="r se">計時器</span> × ${N('spd',360)}</span></span> × ${N('tilt',10)}</span></span> 度</div>`,
+  sety:(nw)=>`<div class="b mo${nw?' new':''}" data-k="sety">y 設為 <span class="r op">${N('center',-95)} + <span class="r op"><span class="r op"><span class="dd">sin ▾</span> 數值 <span class="r op"><span class="r se">計時器</span> × ${N('spd',360)}</span></span> × ${N('amp',10)}</span></span></div>`,
+  color:(nw)=>`<div class="b lk${nw?' new':''}" data-k="color">圖像效果 <span class="dd">顏色 ▾</span> 改變 ${N('colorStep',1)}</div>`,
+  ifelse:(nw,inner)=>`<div class="c${nw?' new':''}" data-k="if"><div class="ch">如果 <span class="hx">碰到 <span class="dd">鼠標 ▾</span> ?</span> 那麼</div>
+    <div class="cb" data-k="then">
+      <div class="b lk">尺寸改變 <span class="r op"><span class="r op">${N('target',120)} − <span class="r lk" style="background:var(--lk);border-color:var(--lk-d)">尺寸</span></span> / ${N('div',5)}</span></div>
+      <div class="b lk">圖像效果 <span class="dd">亮度 ▾</span> 設為 ${n(30)}</div>
+      ${inner||''}
+    </div>
+    <div class="ch mid">否則</div>
+    <div class="cb" data-k="else">
+      <div class="b lk">尺寸改變 <span class="r op"><span class="r op">${n(100)} − <span class="r lk" style="background:var(--lk);border-color:var(--lk-d)">尺寸</span></span> / ${N('div',5)}</span></div>
+      <div class="b lk">圖像效果 <span class="dd">亮度 ▾</span> 設為 ${n(0)}</div>
+    </div><div class="cf"></div></div>`,
+  click:(nw)=>`<div class="c${nw?' new':''}" data-k="if2"><div class="ch">如果 <span class="hx">滑鼠鍵被按下?</span> 那麼</div>
+    <div class="cb" data-k="then2">
+      <div class="b lk" data-k="s1">隱藏</div>
+      <div class="b pn" data-k="s2">✎ 筆跡全部清除</div>
+      <div class="b ev" style="border-radius:6px;padding-top:7px" data-k="s3">廣播訊息 <span class="dd">轉場 ▾</span></div>
+      <div class="b ctb" data-k="s4">停止 <span class="dd">這個程式 ▾</span></div>
+    </div><div class="cf"></div></div>`,
+  forever:(inner)=>`<div class="c" data-k="loop"><div class="ch">重複無限次</div><div class="cb">${inner}</div><div class="cf">↻</div></div>`,
+};
+const fullProgram=()=>B.hat()+B.show()+B.go()+B.forever(B.dir()+B.sety()+B.color()+B.ifelse(false,B.click()));
+
+/* ---------- content ---------- */
+const LEVELS=[
+ {id:'demo',no:'▶',nav:'成品',title:'先看看成品',sub:'一顆會漂浮、會變色，滑鼠靠近會變大，按下去就開始的按鈕。',
+  code:fullProgram(),
+  say:`<p class="hero-note">把滑鼠移到按鈕上，再按一下看看！</p>
+   <p class="say">右邊亮起來的積木，就是<b>現在正在執行</b>的積木。等一下我們會把這段程式拆成五關，一關一關做出來。</p>
+   <div class="legend"><span><i style="background:var(--mo)"></i>動作</span><span><i style="background:var(--lk)"></i>外觀</span><span><i style="background:var(--ct)"></i>控制</span><span><i style="background:var(--se)"></i>偵測</span><span><i style="background:var(--op)"></i>運算</span><span><i style="background:var(--pn)"></i>畫筆</span></div>`,
+  p:{amp:10,spd:360,center:-95,tilt:10,rot:true,float:true,sway:true,colorStep:1,hover:true,target:120,div:5,ease:true,click:true},
+  tip:['先不要解釋，直接讓學生上台玩，引起動機。','問學生：「你覺得這個按鈕做了哪幾件事？」把答案寫在黑板上（浮動、搖擺、變色、變大、按下去會消失），剛好對應五關。']},
+ {id:'l1',no:'1',nav:'浮起來',title:'讓按鈕浮起來',sub:'認識「來回機器」sin',
+  code:B.hat()+B.show()+B.go(true)+B.forever(B.sety(true)),
+  say:`<p class="say"><b>sin</b> 是一台<b>來回機器</b>。把時間丟進去，它會吐出一個數字，在 <b>-1 到 1</b> 之間來回跑，就像盪鞦韆。</p>
+   <p class="say">×10 是<b>盪多高</b>，-95 是<b>站在哪裡盪</b>。</p>`,
+  extra:'machine',
+  p:{amp:10,spd:360,center:-95,tilt:0,rot:false,float:true,sway:false,colorStep:0,hover:false,target:120,div:5,ease:true,click:false},
+  ctl:[['amp','盪多高（×幾）',0,80,1],['spd','速度（計時器×幾）',45,1080,45],['center','站在哪裡（中心 y）',-120,120,5]],
+  guess:[
+   {q:'把 ×10 改成 ×50，會怎樣？',a:'上下跑的距離變大了，浮得更高也沉得更低。',set:{amp:50}},
+   {q:'把 360 改成 90，會怎樣？',a:'變慢了！360 是 1 秒來回一次，90 要 4 秒才來回一次。',set:{spd:90}},
+   {q:'把 -95 改成 100，會怎樣？',a:'按鈕跑到舞台上面去浮動，因為中心點變了。',set:{center:100}},
+  ],
+  tip:['不用解釋 sin 是什麼數學，國中以後才會學。只要記住「來回機器」就夠了。','請學生盯著綠色小球和 y 座標，讓他們說出「最高是幾？最低是幾？」','可以在黑板上算：sin 吐出 1 → ×10 = 10 → 加 -95 = -85（最高）。']},
+ {id:'l2',no:'2',nav:'搖擺',title:'讓按鈕左右搖擺',sub:'cos 是 sin 的雙胞胎，只是慢半拍',
+  code:B.hat()+B.show()+B.go()+B.forever(B.dir(true)+B.sety()),
+  say:`<p class="say"><b>90 度</b>是朝右站好。再加上 cos 來回機器 ×10，按鈕就會在 <b>80 到 100 度</b>之間來回歪。</p>
+   <p class="say">按鈕浮到中間時歪最多，到最高、最低時剛好站正，就像水上的浮標。</p>`,
+  extra:'dial',
+  p:{amp:10,spd:360,center:-95,tilt:10,rot:true,float:true,sway:true,colorStep:0,hover:false,target:120,div:5,ease:true,click:false},
+  ctl:[['tilt','歪幾度（×幾）',0,60,1],['spd','速度',45,1080,45]],
+  tog:[['float','一起上下浮動'],['rot','旋轉方式：可 360 度旋轉']],
+  guess:[
+   {q:'把 ×10 改成 ×45，會怎樣？',a:'搖得超厲害，像喝醉一樣東倒西歪。',set:{tilt:45}},
+   {q:'把 ×10 改成 ×0，會怎樣？',a:'完全不歪了，因為任何數 ×0 都是 0，方向一直是 90 度。',set:{tilt:0}},
+   {q:'把旋轉方式改成「不旋轉」，會怎樣？',a:'方向的數字還在變，可是按鈕看起來不會歪！所以角色的旋轉方式一定要設成「可 360 度旋轉」。',set:{rot:false}},
+  ],
+  tip:['取消「可 360 度旋轉」再讓學生觀察，方向的數字在變，按鈕卻不歪。這是學生最常卡住的地方。','可以讓學生站起來，用身體示範：上下蹲＋左右歪。']},
+ {id:'l3',no:'3',nav:'變色',title:'讓按鈕彩虹變色',sub:'每一格畫面都把顏色往前推一點',
+  code:B.hat()+B.show()+B.go()+B.forever(B.dir()+B.sety()+B.color(true)),
+  say:`<p class="say">顏色效果像一條<b>彩虹跑道</b>。每次「改變 1」就往前走一步，走到 <b>200</b> 就繞回起點，所以會一直循環變色。</p>`,
+  extra:'hue',
+  p:{amp:10,spd:360,center:-95,tilt:10,rot:true,float:true,sway:true,colorStep:1,hover:false,target:120,div:5,ease:true,click:false},
+  ctl:[['colorStep','每次改變多少',0,20,1]],
+  guess:[
+   {q:'把「改變 1」改成「改變 10」，會怎樣？',a:'變色變得超快，像霓虹燈一樣閃。',set:{colorStep:10}},
+   {q:'把「改變 1」改成「改變 0」，會怎樣？',a:'不會變色了，因為每次都往前走 0 步。',set:{colorStep:0}},
+  ],
+  tip:['「改變」和「設為」不一樣：改變是「在原來的數字上加」，設為是「直接變成這個數」。可以請學生把積木換成「設為 1」，會發現顏色就停住了。']},
+ {id:'l4',no:'4',nav:'變大',title:'滑鼠靠近會慢慢變大',sub:'每次只走剩下距離的五分之一',
+  code:B.hat()+B.show()+B.go()+B.forever(B.dir()+B.sety()+B.color()+B.ifelse(true)),
+  say:`<p class="say">如果<b>碰到滑鼠</b>，就往 120 靠近；<b>否則</b>就往 100 靠近。</p>
+   <p class="say">為什麼要「÷5」？想像你離門口 20 步，每次只走<b>剩下距離的五分之一</b>：第一次 4 步，第二次 3.2 步……越近走越小步，就會<b>慢慢停下來</b>。</p>
+   <p class="say">左邊的按鈕是直接「尺寸設為 120」，右邊用了 ÷5。把滑鼠移上去比比看！</p>`,
+  extra:'ease',
+  p:{amp:0,spd:360,center:0,tilt:0,rot:true,float:false,sway:false,colorStep:0,hover:true,target:120,div:5,ease:true,click:false},
+  ctl:[['div','緩動除數（÷幾）',1,20,1],['target','滑鼠靠近時變到多大',100,200,5]],
+  guess:[
+   {q:'把 ÷5 改成 ÷1，會怎樣？',a:'一下子就跳到 120，和左邊的按鈕一樣，沒有滑順的感覺。',set:{div:1}},
+   {q:'把 ÷5 改成 ÷20，會怎樣？',a:'變大得非常慢，因為每次只走剩下的二十分之一。',set:{div:20}},
+   {q:'把 120 改成 180，會怎樣？',a:'滑鼠靠近時變得更大，最後停在 180。',set:{target:180}},
+  ],
+  tip:['先用下方「走一步」按鈕，帶全班一起算前三步，再看表格裡自動算出來的結果。','如果學生問「會不會剛好到 120？」可以讓他們按很多次走一步，會發現越來越接近，但每次都只差一點點，這樣看起來就很滑順。']},
+ {id:'l5',no:'5',nav:'按下去',title:'按下去就開始',sub:'兩個條件都要成立：碰到滑鼠，而且按下滑鼠鍵',
+  code:`<p class="sprite-tag">按鈕角色</p>`+B.hat()+B.show()+B.go()+B.forever(B.dir()+B.sety()+B.color()+B.ifelse(false,B.click(true)))+
+   `<p class="sprite-tag" style="margin-top:16px">星星角色</p><div class="b ev" data-k="recv">當收到訊息 <span class="dd">轉場 ▾</span></div><div class="b lk" data-k="recv2">說出 ${n('出發囉！')}</div>`,
+  say:`<p class="say">「如果」裡面還有一個「如果」：要<b>先碰到滑鼠</b>，<b>再按下去</b>，才會開始。</p>
+   <p class="say"><b>廣播訊息</b>就像對全班大喊「要開始囉！」，其他角色聽到了就會做事。舞台上的塗鴉是畫筆畫的，按下去會被「筆跡全部清除」擦掉。</p>`,
+  extra:'click',
+  p:{amp:10,spd:360,center:-95,tilt:10,rot:true,float:true,sway:true,colorStep:1,hover:true,target:120,div:5,ease:true,click:true},
+  tog:[['slow','慢動作（一步一步看）']],
+  guess:[
+   {q:'滑鼠沒碰到按鈕，在旁邊按下去，會開始嗎？',a:'不會！外面的「如果碰到鼠標」不成立，裡面的「如果」根本不會被檢查。'},
+   {q:'如果把「停止這個程式」拿掉，會怎樣？',a:'按鈕雖然隱藏了，迴圈卻還在跑；滑鼠再碰到那個位置按下去，還會一直廣播「轉場」。'},
+  ],
+  tip:['看兩個綠燈：兩個都亮才會開始，這就是「巢狀如果」。','讓學生把滑鼠放在按鈕外面一直按，證明只按滑鼠是沒用的。']},
+ {id:'final',no:'★',nav:'挑戰',title:'換你設計自己的按鈕',sub:'調整數字，完成下面的任務',
+  code:fullProgram(),
+  say:'',
+  extra:'challenge',
+  p:{amp:10,spd:360,center:-95,tilt:10,rot:true,float:true,sway:true,colorStep:1,hover:true,target:120,div:5,ease:true,click:true},
+  ctl:[['amp','浮動幅度',0,80,1],['spd','速度',45,1080,45],['center','中心 y',-120,120,5],['tilt','搖擺角度',0,60,1],['colorStep','變色速度',0,20,1],['target','放大到',100,200,5],['div','緩動除數',1,20,1]],
+  tip:['任務完成後，請學生回到 Scratch 把數字改成一樣，看看效果是否相同。','進階挑戰：換一個造型、做一個「結束」按鈕，或讓星星收到轉場後切換背景。']},
+];
+
+/* ---------- build DOM ---------- */
+const nav=document.getElementById('nav'),main=document.getElementById('main');
+LEVELS.forEach((L,i)=>{
+  const b=document.createElement('button');
+  b.innerHTML=`<span class="k">${L.no}</span>${L.nav}`;b.onclick=()=>go(i);nav.appendChild(b);L.navBtn=b;
+  const s=document.createElement('section');s.className='lvl';s.id=L.id;
+  let ctl='';
+  if(L.ctl) ctl+=`<div class="ctl">${L.ctl.map(([k,lab,mi,ma,st])=>`<label for="${L.id}-${k}">${lab}</label><input type="range" id="${L.id}-${k}" data-p="${k}" min="${mi}" max="${ma}" step="${st}" value="${L.p[k]}"><output data-o="${k}">${L.p[k]}</output>`).join('')}</div>`;
+  if(L.tog) ctl+=`<div class="tog">${L.tog.map(([k,lab])=>`<label><input type="checkbox" data-p="${k}" ${L.p[k]!==false&&(L.p[k]||k==='slow')?'checked':''}> ${lab}</label>`).join('')}</div>`;
+  let extra='';
+  if(L.extra==='machine') extra=`<div class="panel machine"><h3>來回機器在做什麼</h3>
+     <div class="track"><div class="ball"></div><span class="tk" style="left:0%">-1</span><span class="tk" style="left:50%">0</span><span class="tk" style="left:100%">1</span></div>
+     <div class="chain">sin 吐出<span class="box" data-x="sin">0</span>× <span data-b="amp">10</span> =<span class="box" data-x="mul">0</span>+ (<span data-b="center">-95</span>) =<span class="box y" data-x="y">-95</span></div>
+     <canvas class="wave" width="600" height="120"></canvas></div>`;
+  if(L.extra==='dial') extra=`<div class="panel"><h3>方向儀</h3><canvas class="dial" width="420" height="280" style="width:100%;max-width:420px;display:block;margin:0 auto"></canvas></div>`;
+  if(L.extra==='hue') extra=`<div class="panel"><h3>彩虹跑道（顏色效果 0～200）</h3>
+     <div style="position:relative;height:36px;border-radius:8px;background:linear-gradient(90deg,hsl(205,70%,52%),hsl(295,70%,52%),hsl(25,70%,52%),hsl(115,70%,52%),hsl(205,70%,52%))"><div class="huem" style="position:absolute;top:-6px;width:6px;height:48px;background:var(--ink);border-radius:3px;margin-left:-3px;left:0"></div></div>
+     <div style="display:flex;justify-content:space-between;font-size:14px;font-weight:700;color:var(--ink2)"><span>0</span><span>100</span><span>200（繞回起點）</span></div></div>`;
+  if(L.extra==='ease') extra=`<div class="panel"><h3>一步一步算算看</h3>
+     <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="gbtn" data-a="step">走一步</button><button class="gbtn" data-a="step5">走五步</button><button class="gbtn" data-a="clr">重來</button></div>
+     <table class="ease"><thead><tr><th>第幾步</th><th>現在尺寸</th><th>差多少</th><th>÷<span data-b="div">5</span></th><th>新尺寸</th><th style="width:30%"></th></tr></thead><tbody></tbody></table></div>`;
+  if(L.extra==='click') extra=`<div class="panel"><h3>兩個條件</h3>
+     <div class="lamps"><div class="lamp" data-l="t"><i></i>碰到滑鼠？</div><div class="lamp" data-l="d"><i></i>滑鼠鍵按下？</div></div>
+     <ol class="steps"><li data-s="1">隱藏按鈕</li><li data-s="2">清除畫筆塗鴉</li><li data-s="3">廣播「轉場」</li><li data-s="4">停止這個程式</li></ol></div>`;
+  if(L.extra==='challenge') extra=`<div class="panel"><h3>任務清單</h3><ul class="tasks">
+     <li><label><input type="checkbox">讓按鈕浮得更高（幅度變成 30 以上）</label></li>
+     <li><label><input type="checkbox">讓按鈕浮得慢一點（2 秒來回一次）</label></li>
+     <li><label><input type="checkbox">讓按鈕完全不搖擺</label></li>
+     <li><label><input type="checkbox">讓滑鼠靠近時變成 150%</label></li>
+     <li><label><input type="checkbox">讓按鈕停在舞台正中間浮動</label></li>
+     <li><label><input type="checkbox">做出你最喜歡的組合，說說看為什麼</label></li></ul></div>`;
+  const guess=L.guess?`<div class="guesses">${L.guess.map((g,j)=>`<div class="guess"><p class="q">${g.q}</p><div class="btns">${g.set?`<button class="try" data-g="${j}">試試看</button>`:''}<button class="reveal" aria-expanded="false">看答案</button></div><p class="a" hidden>${g.a}</p></div>`).join('')}</div>`:'';
+  s.innerHTML=`<div class="lvl-head"><div class="lvl-no">${L.no}</div><div><h2>${L.title}</h2><p>${L.sub}</p></div></div>
+   <div class="grid">
+     <div class="code" aria-label="程式積木">${L.code}</div>
+     <div>
+       ${L.say?`<div style="margin-bottom:12px">${L.say}</div>`:''}
+       <div class="panel">
+         <div class="stagebar"><button class="gbtn" data-a="reset"><svg class="gflag" viewBox="0 0 20 20"><path d="M4 2v17" stroke="#3a7d22" stroke-width="2.4"/><path d="M5 3c4-2 6 2 11 0v8c-5 2-7-2-11 0z" fill="#4CBF56" stroke="#3a7d22" stroke-width="1.2"/></svg>重新開始</button><button class="gbtn" data-a="pause">暫停</button><button class="gbtn" data-a="defaults">數字還原</button></div>
+         <canvas class="stage" width="480" height="360"></canvas>
+         <div class="meters"><div class="m"><div class="k">計時器</div><div class="v" data-m="t">0</div></div><div class="m"><div class="k">y 座標</div><div class="v" data-m="y">-95</div></div><div class="m"><div class="k">方向</div><div class="v" data-m="dir">90</div></div><div class="m"><div class="k">尺寸</div><div class="v" data-m="size">100</div></div></div>
+         ${ctl}
+       </div>
+       ${extra?`<div style="margin-top:14px">${extra}</div>`:''}
+     </div>
+   </div>
+   ${guess}
+   <details class="tip"><summary>老師小提示</summary><ul>${L.tip.map(t=>`<li>${t}</li>`).join('')}</ul></details>
+   <div class="pager"><button data-a="prev" ${i===0?'disabled':''}>← 上一關</button><button data-a="next" ${i===LEVELS.length-1?'disabled':''}>下一關 →</button></div>`;
+  main.appendChild(s);L.el=s;L.def={...L.p};if(L.tog&&L.tog.some(t=>t[0]==='slow'))L.p.slow=true;L.def.slow=L.p.slow;
+  setup(L,i);
+});
+
+/* ---------- simulation ---------- */
+const rad=d=>d*Math.PI/180,X=x=>240+x,Y=y=>180-y;
+function newState(L){return{t0:performance.now(),t:0,y:L.p.center,dir:90,color:0,size:100,bright:0,hidden:false,stopped:false,touch:false,paused:false,pauseAt:0,hist:[],seq:null,doodles:mkDoodles(),star:{say:false,jump:0},waves:[],sizeL:100}}
+function mkDoodles(){const a=[];for(let k=0;k<6;k++){const pts=[];let x=-200+Math.random()*400,y=40+Math.random()*120;for(let j=0;j<14;j++){x+=Math.random()*30-15;y+=Math.random()*24-12;pts.push([x,y])}a.push({pts,hue:Math.floor(Math.random()*360)})}return a}
+
+function setup(L,i){
+  const el=L.el,cv=el.querySelector('canvas.stage'),ctx=cv.getContext('2d');
+  L.ctx=ctx;L.cv=cv;L.mouse={x:-999,y:-999,down:false};L.st=newState(L);
+  const pos=e=>{const r=cv.getBoundingClientRect();L.mouse.x=(e.clientX-r.left)*480/r.width-240;L.mouse.y=180-(e.clientY-r.top)*360/r.height};
+  cv.addEventListener('pointermove',pos);
+  cv.addEventListener('pointerleave',()=>{L.mouse.x=L.mouse.y=-999;L.mouse.down=false});
+  cv.addEventListener('pointerdown',e=>{pos(e);L.mouse.down=true});
+  window.addEventListener('pointerup',()=>{L.mouse.down=false});
+  el.querySelectorAll('[data-p]').forEach(inp=>{
+    inp.addEventListener('input',()=>{const k=inp.dataset.p;L.p[k]=inp.type==='checkbox'?inp.checked:+inp.value;syncBind(L,k)});
+  });
+  el.querySelectorAll('[data-a]').forEach(b=>b.addEventListener('click',()=>{
+    const a=b.dataset.a;
+    if(a==='reset')resetLevel(L);
+    if(a==='pause'){const s=L.st;if(s.paused){s.t0+=performance.now()-s.pauseAt;s.paused=false;b.textContent='暫停'}else{s.pauseAt=performance.now();s.paused=true;b.textContent='繼續'}}
+    if(a==='defaults'){Object.assign(L.p,L.def);el.querySelectorAll('[data-p]').forEach(inp=>{const k=inp.dataset.p;if(inp.type==='checkbox')inp.checked=!!L.p[k];else inp.value=L.p[k]});Object.keys(L.p).forEach(k=>syncBind(L,k,true))}
+    if(a==='prev')go(i-1);
+    if(a==='next')go(i+1);
+    if(a==='step')easeStep(L,1);
+    if(a==='step5')easeStep(L,5);
+    if(a==='clr'){L.easeRows=null;renderEase(L)}
+  }));
+  el.querySelectorAll('.guess').forEach((g,j)=>{
+    const rv=g.querySelector('.reveal'),ans=g.querySelector('.a');
+    rv.onclick=()=>{ans.hidden=!ans.hidden;rv.setAttribute('aria-expanded',!ans.hidden);rv.textContent=ans.hidden?'看答案':'收起答案'};
+    const tr=g.querySelector('.try');
+    if(tr)tr.onclick=()=>{const set=L.guess[j].set;Object.entries(set).forEach(([k,v])=>{L.p[k]=v;const inp=el.querySelector(`[data-p="${k}"]`);if(inp){if(inp.type==='checkbox')inp.checked=v;else inp.value=v}syncBind(L,k)});if(L.id==='l2'&&'rot'in set){}};
+  });
+  if(L.extra==='ease'){L.easeRows=null;renderEase(L)}
+}
+function syncBind(L,k,quiet){
+  const v=L.p[k];
+  L.el.querySelectorAll(`[data-b="${k}"]`).forEach(s=>{if(s.textContent!=String(v)){s.textContent=v;if(!quiet){s.classList.remove('chg');void s.offsetWidth;s.classList.add('chg');clearTimeout(s._t);s._t=setTimeout(()=>s.classList.remove('chg'),900)}}});
+  L.el.querySelectorAll(`[data-o="${k}"]`).forEach(o=>o.textContent=v);
+  if(k==='div'&&L.extra==='ease'){L.easeRows=null;renderEase(L)}
+}
+function resetLevel(L){L.st=newState(L);const pb=L.el.querySelector('[data-a="pause"]');pb.textContent='暫停';
+  L.el.querySelectorAll('.steps li').forEach(li=>li.classList.remove('on','done'));
+  L.el.querySelectorAll('[data-k]').forEach(e=>e.classList.remove('on','dim'));}
+
+function update(L,now){
+  const s=L.st,p=L.p;
+  if(s.paused)return;
+  if(s.seq){runSeq(L,now);return}
+  if(s.stopped)return;
+  s.t=(now-s.t0)/1000;
+  s.dir=p.sway?90+Math.cos(rad(s.t*p.spd))*p.tilt:90;
+  s.y=p.float?p.center+Math.sin(rad(s.t*p.spd))*p.amp:p.center;
+  s.color+=p.colorStep;
+  s.hist.push(s.y);if(s.hist.length>200)s.hist.shift();
+  if(p.hover){
+    if(L.id==='l4'){
+      const tl=hitAt(L,-110,0,90,s.sizeL),tr=hitAt(L,110,0,90,s.size);
+      s.touchL=tl;s.touch=tr;
+      s.sizeL=tl?p.target:100; s.brightL=tl?30:0;
+      if(tr){s.size+=(p.target-s.size)/p.div;s.bright=30}else{s.size+=(100-s.size)/p.div;s.bright=0}
+    }else{
+      const t=hitAt(L,0,s.y,s.dir,s.size);s.touch=t;
+      const d=p.ease?p.div:1;
+      if(t){s.size+=(p.target-s.size)/d;s.bright=30;
+        if(p.click&&L.mouse.down){startSeq(L,now)}}
+      else{s.size+=(100-s.size)/d;s.bright=0}
+    }
+  }
+}
+function hitAt(L,cx,cy,dir,size){
+  const m=L.mouse,a=L.p.rot?rad(dir-90):0;
+  const dx=m.x-cx,dy=-(m.y-cy);
+  const lx=dx*Math.cos(-a)-dy*Math.sin(-a),ly=dx*Math.sin(-a)+dy*Math.cos(-a);
+  return Math.abs(lx)<75*size/100&&Math.abs(ly)<30*size/100;
+}
+function startSeq(L,now){
+  const s=L.st;s.seq={start:now,step:0};
+  if(!L.el.querySelector('[data-k="s1"]')){s.hidden=true;s.stopped=true;s.seq=null;s.flash=now;return}
+}
+function runSeq(L,now){
+  const s=L.st,gap=L.p.slow?900:120,k=Math.floor((now-s.seq.start)/gap);
+  const el=L.el;
+  for(let j=1;j<=4;j++){
+    const blk=el.querySelector(`[data-k="s${j}"]`),li=el.querySelector(`.steps li[data-s="${j}"]`);
+    if(blk)blk.classList.toggle('on',k===j-1);
+    if(li){li.classList.toggle('on',k===j-1);li.classList.toggle('done',k>j-1)}
+  }
+  if(k>=0)s.hidden=true;
+  if(k>=1)s.doodles=[];
+  if(k>=2&&!s.broadcasted){s.broadcasted=true;s.waves.push(now);s.star.say=true;s.star.at=now}
+  if(k>=4){s.seq=null;s.stopped=true;el.querySelectorAll('[data-k^="s"]').forEach(b=>b.classList.remove('on'))}
+}
+
+/* ---------- drawing ---------- */
+function drawGrid(ctx){
+  ctx.fillStyle='#fff';ctx.fillRect(0,0,480,360);
+  ctx.lineWidth=1;ctx.font='11px "Noto Sans TC",sans-serif';
+  for(let y=-150;y<=150;y+=50){ctx.strokeStyle=y===0?'#C9D4E5':'#EEF2F8';ctx.beginPath();ctx.moveTo(0,Y(y));ctx.lineTo(480,Y(y));ctx.stroke();ctx.fillStyle='#9AA6BF';ctx.fillText('y '+y,4,Y(y)-3)}
+  for(let x=-200;x<=200;x+=50){ctx.strokeStyle=x===0?'#C9D4E5':'#EEF2F8';ctx.beginPath();ctx.moveTo(X(x),0);ctx.lineTo(X(x),360);ctx.stroke()}
+}
+function guide(ctx,y,txt,col,pos){ctx.save();ctx.strokeStyle=col||'#E8384F';ctx.setLineDash([6,5]);ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(0,Y(y));ctx.lineTo(480,Y(y));ctx.stroke();ctx.setLineDash([]);ctx.fillStyle=col||'#E8384F';ctx.font='bold 13px "Noto Sans TC",sans-serif';ctx.textAlign='right';ctx.textBaseline=pos==='below'?'top':(pos==='mid'?'middle':'bottom');const w=ctx.measureText(txt).width;const ty=Y(y)+(pos==='below'?4:pos==='mid'?0:-4);if(pos==='mid'){ctx.fillStyle='#fff';ctx.fillRect(474-w-4,ty-9,w+8,18);ctx.fillStyle=col}if(pos==='left'){ctx.textAlign='left';ctx.fillText(txt,58,Y(y)-4)}else ctx.fillText(txt,474,ty);ctx.restore()}
+function drawBtn(ctx,x,y,dir,size,color,bright,rot){
+  ctx.save();ctx.translate(X(x),Y(y));if(rot)ctx.rotate(rad(dir-90));ctx.scale(size/100,size/100);
+  const hue=(205+color*1.8)%360,l=48+bright*0.55;
+  ctx.fillStyle=`hsl(${hue},72%,${l}%)`;ctx.strokeStyle=`hsl(${hue},72%,${Math.max(20,l-18)}%)`;ctx.lineWidth=4;
+  ctx.beginPath();ctx.roundRect(-75,-30,150,60,30);ctx.fill();ctx.stroke();
+  ctx.fillStyle='#fff';ctx.beginPath();ctx.moveTo(-42,-13);ctx.lineTo(-42,13);ctx.lineTo(-20,0);ctx.closePath();ctx.fill();
+  ctx.font='900 28px "Noto Sans TC",sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('開始',16,2);
+  ctx.restore();
+}
+function drawStar(ctx,s,now){
+  const jump=s.star.say?Math.abs(Math.sin((now-s.star.at)/180))*20:0;
+  const cx=X(150),cy=Y(110)-jump;
+  ctx.save();ctx.translate(cx,cy);ctx.fillStyle='#FFC233';ctx.strokeStyle='#C98A00';ctx.lineWidth=3;ctx.beginPath();
+  for(let k=0;k<10;k++){const r=k%2?14:34,a=-Math.PI/2+k*Math.PI/5;ctx.lineTo(Math.cos(a)*r,Math.sin(a)*r)}
+  ctx.closePath();ctx.fill();ctx.stroke();
+  ctx.fillStyle='#5a4100';ctx.beginPath();ctx.arc(-8,-2,3,0,7);ctx.arc(8,-2,3,0,7);ctx.fill();ctx.restore();
+  const txt=s.star.say?'出發囉！':'等待中…';
+  ctx.font='bold 16px "Noto Sans TC",sans-serif';const w=ctx.measureText(txt).width+20;
+  ctx.fillStyle='#fff';ctx.strokeStyle='#C9D4E5';ctx.lineWidth=2;ctx.beginPath();ctx.roundRect(cx-w-30,cy-58,w,32,10);ctx.fill();ctx.stroke();
+  ctx.fillStyle=s.star.say?'#1D2B4F':'#9AA6BF';ctx.textAlign='left';ctx.textBaseline='middle';ctx.fillText(txt,cx-w-20,cy-42);
+}
+function drawLevel(L,now){
+  const ctx=L.ctx,s=L.st,p=L.p;drawGrid(ctx);
+  if(L.id==='l1'||L.id==='l2'){if(p.float&&p.amp>0){guide(ctx,p.center+p.amp,'最高 y='+(p.center+p.amp),null,'above');guide(ctx,p.center-p.amp,'最低 y='+(p.center-p.amp),null,'below');}guide(ctx,p.center,'中心 y='+p.center,'#4C97FF',p.amp<14?'left':'mid')}
+  if(L.id==='l5'||L.id==='demo'||L.id==='final'){
+    s.doodles.forEach(d=>{ctx.strokeStyle=`hsl(${d.hue},70%,60%)`;ctx.lineWidth=4;ctx.lineCap='round';ctx.beginPath();d.pts.forEach(([x,y],j)=>j?ctx.lineTo(X(x),Y(y)):ctx.moveTo(X(x),Y(y)));ctx.stroke()});
+  }
+  if(L.id==='l5')drawStar(ctx,s,now);
+  s.waves=s.waves.filter(w=>now-w<1600);
+  s.waves.forEach(w=>{const r=(now-w)/1600*420;ctx.strokeStyle=`rgba(255,191,0,${1-(now-w)/1600})`;ctx.lineWidth=6;ctx.beginPath();ctx.arc(X(0),Y(s.y),r,0,7);ctx.stroke()});
+  if(L.id==='l4'){
+    drawBtn(ctx,-110,0,90,s.sizeL,0,s.brightL||0,false);
+    drawBtn(ctx,110,0,90,s.size,0,s.bright,false);
+    ctx.fillStyle='#4A5878';ctx.font='bold 15px "Noto Sans TC",sans-serif';ctx.textAlign='center';
+    ctx.fillText('直接設為 '+p.target,X(-110),Y(-80));ctx.fillText('緩動 ÷'+p.div,X(110),Y(-80));
+    ctx.fillText('尺寸 '+Math.round(s.sizeL),X(-110),Y(-102));ctx.fillText('尺寸 '+s.size.toFixed(1),X(110),Y(-102));
+  }else if(!s.hidden){drawBtn(ctx,0,s.y,s.dir,s.size,s.color,s.bright,p.rot)}
+  if(s.hidden&&L.id!=='l5'){
+    ctx.fillStyle='rgba(29,43,79,.85)';ctx.fillRect(0,130,480,100);
+    ctx.fillStyle='#FFBF00';ctx.font='900 30px "Noto Sans TC",sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText('廣播「轉場」！遊戲開始',240,168);ctx.fillStyle='#fff';ctx.font='16px "Noto Sans TC",sans-serif';ctx.fillText('按「重新開始」再玩一次',240,204);
+  }
+  if(L.id==='l5'&&s.stopped){ctx.fillStyle='#1D2B4F';ctx.font='bold 16px "Noto Sans TC",sans-serif';ctx.textAlign='center';ctx.fillText('按鈕的程式停止了，按「重新開始」再玩一次',240,340)}
+  if(s.paused){ctx.fillStyle='rgba(29,43,79,.7)';ctx.font='900 22px "Noto Sans TC",sans-serif';ctx.textAlign='left';ctx.fillText('⏸ 暫停中',12,30)}
+}
+function drawExtras(L){
+  const s=L.st,p=L.p,el=L.el;
+  if(L.extra==='machine'){
+    const sv=Math.sin(rad(s.t*p.spd));
+    {const f=(sv+1)/2;el.querySelector('.ball').style.left=`calc(${f*100}% + ${15-30*f}px)`}
+    el.querySelector('[data-x="sin"]').textContent=sv.toFixed(2);
+    el.querySelector('[data-x="mul"]').textContent=(sv*p.amp).toFixed(1);
+    el.querySelector('[data-x="y"]').textContent=s.y.toFixed(1);
+    const wc=el.querySelector('canvas.wave'),w=wc.getContext('2d');
+    w.clearRect(0,0,600,120);w.fillStyle='#4A5878';w.font='12px "Noto Sans TC",sans-serif';w.fillText('y 的變化（越右邊越新）',8,16);
+    const sp=Math.max(p.amp,8)*1.4,lo=p.center-sp,hi=p.center+sp,my=v=>110-(v-lo)/(hi-lo)*90;
+    w.strokeStyle='#C9D4E5';w.setLineDash([4,4]);w.beginPath();w.moveTo(0,my(p.center));w.lineTo(600,my(p.center));w.stroke();w.setLineDash([]);
+    w.strokeStyle='#4C97FF';w.lineWidth=3;w.beginPath();s.hist.forEach((v,j)=>{const x=600-(s.hist.length-1-j)*3;j?w.lineTo(x,my(v)):w.moveTo(x,my(v))});w.stroke();
+    if(s.hist.length){w.fillStyle='#4C97FF';w.beginPath();w.arc(600-2,my(s.hist[s.hist.length-1]),5,0,7);w.fill()}
+  }
+  if(L.extra==='dial'){
+    const c=el.querySelector('canvas.dial').getContext('2d');c.clearRect(0,0,420,280);
+    const cx=210,cy=200,R=170;
+    c.strokeStyle='#C9D4E5';c.lineWidth=2;c.beginPath();c.arc(cx,cy,R,Math.PI,0);c.stroke();
+    c.font='bold 13px "Noto Sans TC",sans-serif';c.fillStyle='#4A5878';c.textAlign='center';
+    for(let d=0;d<=180;d+=10){const a=Math.PI+rad(d);c.beginPath();c.moveTo(cx+Math.cos(a)*R,cy+Math.sin(a)*R);c.lineTo(cx+Math.cos(a)*(R-(d%45?8:16)),cy+Math.sin(a)*(R-(d%45?8:16)));c.stroke()}
+    const lo=90-p.tilt,hi=90+p.tilt;
+    c.fillStyle='rgba(76,151,255,.18)';c.beginPath();c.moveTo(cx,cy);c.arc(cx,cy,R-2,Math.PI*1.5+rad(lo-90),Math.PI*1.5+rad(hi-90));c.closePath();c.fill();
+    const a=Math.PI*1.5+rad(s.dir-90);
+    c.strokeStyle='#E8384F';c.lineWidth=5;c.lineCap='round';c.beginPath();c.moveTo(cx,cy);c.lineTo(cx+Math.cos(a)*(R-10),cy+Math.sin(a)*(R-10));c.stroke();
+    c.fillStyle='#1D2B4F';c.beginPath();c.arc(cx,cy,7,0,7);c.fill();
+    c.font='bold 15px "Noto Sans TC",sans-serif';
+    c.fillText(lo.toFixed(0)+'°',cx+Math.cos(Math.PI*1.5+rad(lo-90))*(R+16),cy+Math.sin(Math.PI*1.5+rad(lo-90))*(R+16));
+    c.fillText(hi.toFixed(0)+'°',cx+Math.cos(Math.PI*1.5+rad(hi-90))*(R+16),cy+Math.sin(Math.PI*1.5+rad(hi-90))*(R+16));
+    const off=s.dir-90;c.font='900 20px "Noto Sans TC",sans-serif';c.fillStyle='#1D2B4F';
+    c.fillText('方向 '+s.dir.toFixed(1)+'°',cx,cy+44);
+    c.font='bold 15px "Noto Sans TC",sans-serif';c.fillStyle='#4A5878';
+    c.fillText(Math.abs(off)<0.5?'站正了':(off>0?'往右歪 ':'往左歪 ')+Math.abs(off).toFixed(1)+' 度',cx,cy+70);
+  }
+  if(L.extra==='hue'){el.querySelector('.huem').style.left=((s.color%200)/200*100)+'%'}
+  if(L.extra==='click'){
+    el.querySelector('[data-l="t"]').classList.toggle('yes',!!s.touch&&!s.hidden);
+    el.querySelector('[data-l="d"]').classList.toggle('yes',L.mouse.down);
+    el.querySelector('[data-k="recv"]').classList.toggle('on',!!s.star.say&&performance.now()-s.star.at<1500);
+    el.querySelector('[data-k="recv2"]').classList.toggle('on',!!s.star.say&&performance.now()-s.star.at<1500);
+  }
+}
+function highlight(L){
+  const s=L.st,el=L.el,run=!s.stopped&&!s.paused&&!s.seq;
+  const set=(k,v)=>el.querySelectorAll(`[data-k="${k}"]`).forEach(e=>e.classList.toggle('on',v));
+  set('sety',run&&L.p.float);set('dir',run&&L.p.sway);set('color',run&&L.p.colorStep>0);
+  const anyT=L.id==='l4'?(s.touch||s.touchL):s.touch;
+  el.querySelectorAll('[data-k="then"]').forEach(e=>{e.classList.toggle('on',run&&anyT);e.classList.toggle('dim',run&&!anyT)});
+  el.querySelectorAll('[data-k="else"]').forEach(e=>{e.classList.toggle('on',run&&!anyT);e.classList.toggle('dim',run&&anyT)});
+}
+function meters(L){
+  const s=L.st,el=L.el;
+  el.querySelector('[data-m="t"]').textContent=s.t.toFixed(2);
+  el.querySelector('[data-m="y"]').textContent=s.y.toFixed(1);
+  el.querySelector('[data-m="dir"]').textContent=s.dir.toFixed(1);
+  el.querySelector('[data-m="size"]').textContent=s.size.toFixed(1);
+}
+
+/* ease table */
+function easeStep(L,k){
+  if(!L.easeRows)L.easeRows=[];
+  for(let j=0;j<k;j++){const cur=L.easeRows.length?L.easeRows[L.easeRows.length-1].nw:100,diff=L.p.target-cur,st=diff/L.p.div;L.easeRows.push({cur,diff,st,nw:cur+st})}
+  renderEase(L);
+}
+function renderEase(L){
+  const tb=L.el.querySelector('table.ease tbody');if(!tb)return;
+  const rows=L.easeRows||[];const span=L.p.target-100||1;
+  tb.innerHTML=rows.length?rows.map((r,j)=>`<tr><td>${j+1}</td><td>${r.cur.toFixed(2)}</td><td>${r.diff.toFixed(2)}</td><td>+${r.st.toFixed(2)}</td><td><b>${r.nw.toFixed(2)}</b></td><td><div class="bar" style="width:${Math.min(100,(r.nw-100)/span*100)}%"></div></td></tr>`).join(''):`<tr><td colspan="6" style="color:#9AA6BF">按「走一步」，從尺寸 100 開始往 ${L.p.target} 走</td></tr>`;
+}
+
+/* ---------- navigation & loop ---------- */
+let cur=0;
+function go(i){
+  if(i<0||i>=LEVELS.length)return;cur=i;
+  LEVELS.forEach((L,j)=>{L.el.classList.toggle('show',j===i);L.navBtn.setAttribute('aria-current',j===i)});
+  resetLevel(LEVELS[i]);window.scrollTo({top:0});
+  history.replaceState(null,'','#'+LEVELS[i].id);
+}
+document.addEventListener('keydown',e=>{if(e.target.tagName==='INPUT')return;if(e.key==='ArrowRight')go(cur+1);if(e.key==='ArrowLeft')go(cur-1)});
+let last=0;
+function loop(now){
+  requestAnimationFrame(loop);
+  if(now-last<1000/30-1)return;last=now;
+  const L=LEVELS[cur];update(L,now);drawLevel(L,now);drawExtras(L);highlight(L);meters(L);
+}
+const start=LEVELS.findIndex(L=>'#'+L.id===location.hash);
+go(start>=0?start:0);requestAnimationFrame(loop);
+</script>
+</body>
+</html>
