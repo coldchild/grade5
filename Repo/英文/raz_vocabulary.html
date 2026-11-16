@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RAZ Vocabulary</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f1117;--card:#1a1d27;--gold:#f0c040;--green:#6ee7b7;--red:#f87171;--blue:#60a5fa;--purple:#a78bfa;--teal:#2dd4bf;--text:#e8e8f0;--muted:#8888aa;--border:#2a2d3e;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans','Noto Sans TC',sans-serif;min-height:100vh;padding-bottom:60px;}
+.voice-bar{display:flex;justify-content:center;align-items:center;gap:8px;flex-wrap:wrap;padding:14px 16px 0;}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 20px;border-radius:30px;border:1.5px solid var(--border);background:transparent;color:var(--text);font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;}
+.btn:hover{border-color:var(--gold);color:var(--gold);}
+.btn.on{background:rgba(240,192,64,.12);border-color:var(--gold);color:var(--gold);}
+.btn-gold{background:var(--gold);color:#0f1117;border-color:var(--gold);}
+.btn-gold:hover{color:#0f1117;opacity:.9;}
+.btn-green{background:rgba(110,231,183,.15);border-color:var(--green);color:var(--green);}
+.btn-red{background:rgba(248,113,113,.15);border-color:var(--red);color:var(--red);}
+.week-bar{display:flex;justify-content:center;flex-wrap:wrap;padding:20px 16px 0;gap:8px;}
+.week-btn{padding:9px 22px;border-radius:30px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:transparent;color:var(--muted);transition:all .25s;font-family:inherit;}
+.week-btn.on{color:#0f1117;}
+.week-btn.on.all{background:linear-gradient(135deg,var(--purple),var(--teal));border-color:transparent;}
+.hdr{text-align:center;padding:28px 16px 8px;}
+.hdr h1{font-family:'Playfair Display',serif;font-size:34px;color:var(--gold);font-weight:700;}
+.hdr .sub{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-top:6px;}
+.hdr .badge{display:inline-block;margin-top:12px;padding:5px 14px;border-radius:20px;background:var(--card);border:1px solid var(--border);font-size:12px;color:var(--muted);}
+.tabs{display:flex;justify-content:center;flex-wrap:wrap;gap:6px;padding:20px 12px 8px;}
+.tab{padding:9px 16px;border-radius:12px;border:1.5px solid var(--border);background:transparent;color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;}
+.tab.on{background:var(--card);color:var(--gold);border-color:var(--gold);}
+.panel{display:none;}
+.panel.on{display:block;}
+.bctrl{display:flex;flex-direction:column;align-items:center;gap:10px;padding:12px 16px 0;margin-bottom:20px;}
+.bctrl .btn{width:260px;max-width:88vw;justify-content:center;}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;padding:16px;max-width:900px;margin:0 auto;}
+.card{position:relative;background:var(--card);border:1px solid var(--border);border-radius:18px;overflow:hidden;cursor:pointer;}
+.card .emo{display:flex;align-items:center;justify-content:center;min-height:90px;font-size:48px;background:#12151e;}
+.card .body{padding:18px 56px 18px 18px;}
+.card .num{font-size:11px;color:var(--muted);letter-spacing:1px;margin-bottom:2px;}
+.card .row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.cword{font-size:38px;font-weight:400;line-height:1.15;word-break:break-word;}
+.cpos{font-size:13px;color:var(--muted);font-style:italic;margin-top:2px;}
+.card hr{border:none;border-top:1px solid var(--border);margin:10px 0;}
+.czh{font-size:28px;font-weight:400;line-height:1.3;}
+.star{position:absolute;top:8px;right:10px;background:rgba(15,17,23,.6);border:none;font-size:22px;color:#555a70;cursor:pointer;border-radius:50%;width:38px;height:38px;line-height:38px;}
+.star.on{color:var(--gold);}
+.spk{width:40px;height:40px;border-radius:50%;border:1.5px solid var(--border);background:transparent;color:var(--text);font-size:18px;cursor:pointer;flex-shrink:0;}
+.spk.sp{border-color:var(--gold);background:rgba(240,192,64,.15);}
+.wtag{display:inline-block;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;padding:2px 8px;border-radius:10px;margin-bottom:4px;font-weight:700;}
+.grid.hz .card:not(.rev) .czh{visibility:hidden;}
+.grid.he .card:not(.rev) .cword{visibility:hidden;}
+.grid.hz .card:not(.rev) .emo,.grid.he .card:not(.rev) .emo{font-size:0;}
+.grid.hz .card:not(.rev) .emo::after,.grid.he .card:not(.rev) .emo::after{content:'❓';font-size:48px;}
+.empty{grid-column:1/-1;text-align:center;color:var(--muted);padding:40px 16px;font-size:14px;}
+.quiz{max-width:560px;margin:0 auto;padding:16px;text-align:center;}
+.prog{font-size:12px;color:var(--muted);letter-spacing:1px;margin-bottom:12px;}
+.fcard{background:var(--card);border:1px solid var(--border);border-radius:22px;min-height:320px;padding:28px 18px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;cursor:pointer;}
+.fc-emo{font-size:64px;}
+.fc-word{font-size:54px;font-weight:400;line-height:1.15;word-break:break-word;}
+.fc-zh{font-size:58px;font-weight:400;line-height:1.2;word-break:break-word;}
+.fc-zh.gold{color:var(--gold);}
+.fc-pos{font-size:14px;color:var(--muted);font-style:italic;}
+.hint{font-size:12px;color:var(--muted);}
+.actions{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:16px;}
+.res{background:var(--card);border:1px solid var(--border);border-radius:22px;padding:32px 18px;}
+.res .big{font-family:'Playfair Display',serif;font-size:52px;color:var(--gold);}
+.res .msg{margin:10px 0 18px;color:var(--muted);font-size:14px;}
+.bigspk{width:84px;height:84px;font-size:36px;margin:8px auto 16px;display:block;}
+.opts{display:flex;flex-direction:column;gap:10px;margin-top:8px;}
+.opt{padding:14px 16px;border-radius:14px;border:1.5px solid var(--border);background:var(--card);color:var(--text);font-size:22px;font-family:inherit;cursor:pointer;transition:all .2s;}
+.opt:hover{border-color:var(--gold);}
+.opt.ok{border-color:var(--green);background:rgba(110,231,183,.15);color:var(--green);}
+.opt.no{border-color:var(--red);background:rgba(248,113,113,.15);color:var(--red);}
+.letters{display:flex;justify-content:center;flex-wrap:wrap;gap:6px;margin:14px 0;}
+.lt{width:38px;height:48px;text-align:center;font-size:24px;border-radius:10px;border:1.5px solid var(--border);background:var(--card);color:var(--text);font-family:inherit;text-transform:lowercase;}
+.lt:focus{outline:none;border-color:var(--gold);}
+.lt.ok{border-color:var(--green);background:rgba(110,231,183,.15);color:var(--green);}
+.lt.no{border-color:var(--red);background:rgba(248,113,113,.15);color:var(--red);}
+.gap{width:20px;text-align:center;font-size:28px;color:var(--muted);line-height:48px;}
+.sp-zh{font-size:32px;color:var(--gold);margin-bottom:4px;}
+.anslist{display:flex;flex-direction:column;gap:8px;text-align:left;margin:8px 0 18px;}
+.ansrow{display:flex;align-items:center;gap:12px;background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:10px 12px;}
+.ansno{width:30px;height:30px;border-radius:50%;background:rgba(240,192,64,.15);color:var(--gold);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;}
+.ansmid{flex:1;min-width:0;}
+.answord{font-size:24px;word-break:break-word;}
+.anszh{font-size:14px;color:var(--muted);}
+@media(max-width:480px){
+  .tab{font-size:11px;padding:8px 10px;}
+  .week-btn{padding:7px 14px;font-size:11px;}
+  .grid{grid-template-columns:1fr;}
+  .hdr h1{font-size:28px;}
+  .lt{width:30px;height:42px;font-size:20px;}
+  .gap{width:14px;line-height:42px;}
+}
+
+.mode-bar{display:flex;justify-content:center;gap:10px;padding:18px 16px 0;}
+.mode-btn{padding:12px 26px;border-radius:16px;font-size:16px;font-weight:700;cursor:pointer;border:2px solid var(--border);background:transparent;color:var(--muted);font-family:inherit;transition:all .2s;}
+.mode-btn.on{background:var(--gold);border-color:var(--gold);color:#0f1117;}
+.mode-desc{text-align:center;font-size:12px;color:var(--muted);margin-top:8px;}
+.meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:6px;justify-content:inherit;}
+.meta span{font-size:18px;font-weight:600;padding:4px 14px;border-radius:14px;border:1px solid var(--border);color:var(--muted);}
+.meta .pg{color:var(--teal);border-color:var(--teal);}
+.meta .base{color:var(--purple);border-color:var(--purple);}
+.ex{font-size:15px;line-height:1.5;color:#c8c8dc;margin-top:10px;font-style:italic;}
+.ex b{color:var(--gold);font-style:normal;}
+.fcard .ex,.quiz>.ex{text-align:center;max-width:460px;margin:10px auto 0;}
+.grid.hz .card:not(.rev) .ex,.grid.he .card:not(.rev) .ex{visibility:hidden;}
+@media(max-width:480px){.meta span{font-size:16px;}.mode-btn{padding:10px 18px;font-size:14px;}}
+</style>
+</head>
+<body>
+<div class="voice-bar">
+  <span style="font-size:12px;color:var(--muted);">🔊 語音：</span>
+  <select id="voiceSel" style="background:var(--card);color:var(--text);border:1.5px solid var(--border);border-radius:8px;padding:6px 10px;font-size:12px;font-family:inherit;cursor:pointer;">
+    <option value="en-US-Neural2-C">Neural2 C（女）</option>
+    <option value="en-US-Neural2-D">Neural2 D（男）</option>
+    <option value="en-US-Journey-F" selected>Journey F（女，最自然）</option>
+    <option value="en-US-Journey-D">Journey D（男，最自然）</option>
+    <option value="en-GB-Neural2-B">Neural2 英式（男）</option>
+    <option value="en-GB-Neural2-C">Neural2 英式（女）</option>
+  </select>
+  <button onclick="speak('hello',null)" class="btn" style="padding:6px 12px;font-size:12px;">試聽</button>
+</div>
+<div class="mode-bar" id="mode-bar"></div>
+<div class="mode-desc" id="mode-desc"></div>
+<div class="week-bar" id="book-bar"></div>
+<div class="hdr">
+  <h1 id="h-title">RAZ Vocabulary</h1>
+  <div class="sub" id="h-sub">RAZ</div>
+  <div class="badge" id="h-count"></div>
+</div>
+<div class="tabs">
+  <button class="tab" id="t-browse" onclick="showTab('browse')">📖 單字</button>
+  <button class="tab" id="t-en" onclick="showTab('en')">🇬🇧 英→中</button>
+  <button class="tab" id="t-zh" onclick="showTab('zh')">🇹🇼 中→英</button>
+  <button class="tab" id="t-listen" onclick="showTab('listen')">🎧 聽力</button>
+  <button class="tab" id="t-spell" onclick="showTab('spell')">⌨️ 拼字</button>
+  <button class="tab" id="t-dict" onclick="showTab('dict')">✍️ 聽寫</button>
+</div>
+<div class="panel" id="p-browse">
+  <div class="bctrl">
+    <button class="btn" id="b-star" onclick="toggleStarOnly()">⭐ 只練加星號</button>
+    <button class="btn" onclick="sortByPage()">📄 依頁數排列</button>
+    <button class="btn" onclick="shuffleBrowse()">🔀 打亂順序</button>
+    <button class="btn" id="b-hz" onclick="toggleHide('zh')">🙈 隱藏中文</button>
+    <button class="btn" id="b-he" onclick="toggleHide('en')">🙈 隱藏英文</button>
+  </div>
+  <div class="grid" id="grid"></div>
+</div>
+<div class="panel" id="p-en"><div class="quiz" id="fc-en"></div></div>
+<div class="panel" id="p-zh"><div class="quiz" id="fc-zh"></div></div>
+<div class="panel" id="p-listen"><div class="quiz" id="listen-box"></div></div>
+<div class="panel" id="p-spell"><div class="quiz" id="spell-box"></div></div>
+<div class="panel" id="p-dict"><div class="quiz" id="dict-box"></div></div>
+<script>
+/* ===== 書本清單 =====
+   新增一本書：在 BOOKS 加一筆，know = 認識用（每頁難字），recite = 背誦用（要會拼的字）。
+   wk 週次（顯示在書名前面）。
+   欄位：word 單字（書中出現的樣子）、base 原型（沒有就留空）、zh 中文、pos 詞性、
+        p 頁數、ex 書中例句、hl 例句裡要標亮的字、emoji。 */
+var BOOKS=[
+{id:'m_marcus',wk:'W2',level:'M',title:'Marcus Loses Patches',emoji:'🐶',color:'#f0c040',
+know:[
+{word:"hooked",base:"hook",pos:"adj.",zh:"著迷的、上癮的",p:3,emoji:"🎮",ex:"My mom thinks I'm hooked on them.",hl:"hooked"},
+{word:"awful",base:"",pos:"adj.",zh:"很、非常（an awful lot 非常多）",p:3,emoji:"📈",ex:"I do spend an awful lot of time playing them.",hl:"awful"},
+{word:"awesome",base:"",pos:"adj.",zh:"超棒的",p:3,emoji:"🤩",ex:"I'm right in the middle of this awesome game.",hl:"awesome"},
+{word:"Egyptian",base:"",pos:"adj.",zh:"埃及的",p:3,emoji:"🇪🇬",ex:"I have to find my way through an Egyptian pyramid.",hl:"Egyptian"},
+{word:"pyramid",base:"",pos:"n.",zh:"金字塔",p:3,emoji:"🔺",ex:"I have to find my way through an Egyptian pyramid.",hl:"pyramid"},
+{word:"sphinx",base:"",pos:"n.",zh:"人面獅身像",p:3,emoji:"🦁",ex:"I'll get past the sphinx, and then I'll feed Patches.",hl:"sphinx"},
+{word:"casserole",base:"",pos:"n.",zh:"焗烤料理",p:4,emoji:"🥘",ex:"I need to get the casserole out of the oven for lunch.",hl:"casserole"},
+{word:"oven",base:"",pos:"n.",zh:"烤箱",p:4,emoji:"♨️",ex:"I need to get the casserole out of the oven for lunch.",hl:"oven"},
+{word:"difficult",base:"",pos:"adj.",zh:"困難的",p:4,emoji:"🧗",ex:"This game is really difficult.",hl:"difficult"},
+{word:"amulet",base:"",pos:"n.",zh:"護身符",p:4,emoji:"🧿",ex:"I'll try getting to the amulet from the sphinx one more time.",hl:"amulet"},
+{word:"canine",base:"",pos:"n.",zh:"狗、犬",p:4,emoji:"🐕",ex:"Then I'll feed my favorite canine.",hl:"canine"},
+{word:"several",base:"",pos:"adj.",zh:"幾個的",p:4,emoji:"🔢",ex:"Forty-five minutes and several tries later, I hear Mom again.",hl:"several"},
+{word:"timing",base:"",pos:"n.",zh:"時機",p:4,emoji:"⏱️",ex:"Perfect timing.",hl:"timing"},
+{word:"hardcore",base:"",pos:"adj.",zh:"很激烈的",p:4,emoji:"🔥",ex:"Man, was that hardcore!",hl:"hardcore"},
+{word:"wiped out",base:"wipe out",pos:"adj.",zh:"累壞了",p:4,emoji:"😵",ex:"I'm wiped out from dueling the two-headed sphinx.",hl:"wiped out"},
+{word:"dueling",base:"duel",pos:"v.",zh:"決鬥",p:4,emoji:"⚔️",ex:"I'm wiped out from dueling the two-headed sphinx.",hl:"dueling"},
+{word:"gulp",base:"",pos:"int.",zh:"（緊張時）吞口水",p:5,emoji:"😰",ex:"Gulp. I'm in BIG trouble.",hl:"Gulp"},
+{word:"trouble",base:"",pos:"n.",zh:"麻煩",p:5,emoji:"⚠️",ex:"Gulp. I'm in BIG trouble.",hl:"trouble"},
+{word:"starving",base:"starve",pos:"adj.",zh:"餓壞了",p:5,emoji:"🍽️",ex:"I bet Patches is starving by now.",hl:"starving"},
+{word:"forgot",base:"forget",pos:"v.",zh:"忘記",p:5,emoji:"🤦",ex:"I got so into my game that I forgot about my dog.",hl:"forgot"},
+{word:"backyard",base:"",pos:"n.",zh:"後院",p:6,emoji:"🏡",ex:"I go to the backyard to bring Patches in.",hl:"backyard"},
+{word:"shade",base:"",pos:"n.",zh:"樹蔭",p:6,emoji:"🌳",ex:"She's not lying under her favorite shade tree.",hl:"shade"},
+{word:"neighbor",base:"",pos:"n.",zh:"鄰居",p:6,emoji:"🏘️",ex:"She's not watching our neighbors walk by through the gate.",hl:"neighbors"},
+{word:"gate",base:"",pos:"n.",zh:"大門",p:6,emoji:"🚪",ex:"Wait, the gate's open.",hl:"gate"},
+{word:"unlatched",base:"unlatch",pos:"adj.",zh:"沒拴上的",p:6,emoji:"🔓",ex:"I must have left the gate unlatched.",hl:"unlatched"},
+{word:"escaped",base:"escape",pos:"v.",zh:"逃走",p:7,emoji:"🏃",ex:"I think she escaped.",hl:"escaped"},
+{word:"torn between",base:"tear",pos:"phr.",zh:"在兩者之間左右為難",p:7,emoji:"⚖️",ex:"I'm torn between being psyched about beating the sphinx and sad about Patches being gone.",hl:"torn between"},
+{word:"psyched",base:"",pos:"adj.",zh:"很興奮的",p:7,emoji:"🥳",ex:"I'm torn between being psyched about beating the sphinx and sad about Patches being gone.",hl:"psyched"},
+{word:"beating",base:"beat",pos:"v.",zh:"打敗",p:7,emoji:"🏆",ex:"I'm psyched about beating the sphinx.",hl:"beating"},
+{word:"locate",base:"",pos:"v.",zh:"找出位置",p:8,emoji:"📍",ex:"I hear Mom making telephone calls trying to locate Patches.",hl:"locate"},
+{word:"worried",base:"worry",pos:"adj.",zh:"擔心的",p:8,emoji:"😟",ex:"No one has seen her, and I'm worried.",hl:"worried"},
+{word:"sign",base:"",pos:"n.",zh:"告示、牌子",p:8,emoji:"🪧",ex:"I'll make signs so people can contact us.",hl:"signs"},
+{word:"contact",base:"",pos:"v.",zh:"聯絡",p:8,emoji:"📞",ex:"I'll make signs so people can contact us if they see Patches.",hl:"contact"},
+{word:"disappointed",base:"disappoint",pos:"adj.",zh:"失望的",p:9,emoji:"😞",ex:"She's still disappointed in me for being so irresponsible.",hl:"disappointed"},
+{word:"irresponsible",base:"",pos:"adj.",zh:"不負責任的",p:9,emoji:"🙈",ex:"She's still disappointed in me for being so irresponsible.",hl:"irresponsible"},
+{word:"neighborhood",base:"",pos:"n.",zh:"社區、附近一帶",p:9,emoji:"🏙️",ex:"We walk around the neighborhood to hang them up.",hl:"neighborhood"},
+{word:"hang up",base:"hang",pos:"v.",zh:"張貼、掛起",p:9,emoji:"📌",ex:"We walk around the neighborhood to hang them up.",hl:"hang them up"},
+{word:"growls",base:"growl",pos:"v.",zh:"（肚子）咕嚕叫",p:10,emoji:"🫃",ex:"My stomach growls loudly.",hl:"growls"},
+{word:"loudly",base:"",pos:"adv.",zh:"大聲地",p:10,emoji:"📢",ex:"My stomach growls loudly.",hl:"loudly"},
+{word:"elsewhere",base:"",pos:"adv.",zh:"別的地方",p:10,emoji:"🧭",ex:"My stomach growls loudly as we leave to look elsewhere.",hl:"elsewhere"},
+{word:"block",base:"",pos:"n.",zh:"街區",p:11,emoji:"🏢",ex:"Grandpa's house is a few blocks from our place.",hl:"blocks"},
+{word:"snack",base:"",pos:"n.",zh:"點心",p:11,emoji:"🍪",ex:"Maybe he'll have a snack.",hl:"snack"},
+{word:"seem",base:"",pos:"v.",zh:"似乎、好像",p:11,emoji:"🤔",ex:"It doesn't seem like we'll ever find Patches.",hl:"seem"},
+{word:"knock",base:"",pos:"v.",zh:"敲（門）",p:12,emoji:"✊",ex:"I knock on Grandpa's door.",hl:"knock"},
+{word:"barking",base:"bark",pos:"v.",zh:"狗叫",p:12,emoji:"🐶",ex:"I knock on Grandpa's door, and I hear barking.",hl:"barking"},
+{word:"licks",base:"lick",pos:"v.",zh:"舔",p:12,emoji:"👅",ex:"Patches jumps up and licks my face.",hl:"licks"},
+{word:"pet",base:"",pos:"v.",zh:"撫摸",p:12,emoji:"🫳",ex:"I hug her and pet her.",hl:"pet"},
+{word:"rub",base:"",pos:"v.",zh:"搓、揉",p:12,emoji:"🤲",ex:"I even rub her stomach just where she likes it.",hl:"rub"},
+{word:"stomach",base:"",pos:"n.",zh:"肚子",p:12,emoji:"🍔",ex:"I even rub her stomach just where she likes it.",hl:"stomach"},
+{word:"happened",base:"happen",pos:"v.",zh:"發生",p:13,emoji:"❓",ex:"Grandpa asks me what happened.",hl:"happened"},
+{word:"accidentally",base:"",pos:"adv.",zh:"不小心地",p:13,emoji:"😬",ex:"I tell him how I accidentally left the backyard gate open.",hl:"accidentally"},
+{word:"probably",base:"",pos:"adv.",zh:"大概、可能",p:13,emoji:"🤷",ex:"Patches got out, probably looking for food.",hl:"probably"},
+{word:"explain",base:"",pos:"v.",zh:"解釋",p:14,emoji:"🗣️",ex:"Can you explain how you forgot to feed her?",hl:"explain"},
+{word:"realized",base:"realize",pos:"v.",zh:"發現、意識到",p:14,emoji:"💡",ex:"When I realized Patches was gone, I was so worried.",hl:"realized"},
+{word:"important",base:"",pos:"adj.",zh:"重要的",p:14,emoji:"⭐",ex:"How could a video game be more important than your dog?",hl:"important"},
+{word:"safe",base:"",pos:"adj.",zh:"安全的",p:15,emoji:"🛡️",ex:"I'm happy Patches is safe.",hl:"safe"},
+{word:"awful",base:"",pos:"adj.",zh:"很難過的（feel awful）",p:15,emoji:"😣",ex:"I feel awful that my dog could have gotten hurt because of me.",hl:"awful"},
+{word:"gotten hurt",base:"get hurt",pos:"phr.",zh:"受傷",p:15,emoji:"🩹",ex:"My dog could have gotten hurt because of me.",hl:"gotten hurt"},
+{word:"apology",base:"",pos:"n.",zh:"道歉",p:16,emoji:"🙇",ex:"Thank you for the apology, Marcus.",hl:"apology"}
+],
+recite:[
+{word:"awful",base:"",pos:"adj.",zh:"很、非常；很難過的",p:"3、15",emoji:"😣",ex:"I feel awful that my dog could have gotten hurt.",hl:"awful"},
+{word:"starve",base:"",pos:"v.",zh:"挨餓、餓壞了",p:5,emoji:"🍽️",ex:"I bet Patches is starving by now.",hl:"starving"},
+{word:"torn between",base:"tear",pos:"phr.",zh:"在兩者之間左右為難",p:7,emoji:"⚖️",ex:"I'm torn between being psyched and sad.",hl:"torn between"},
+{word:"locate",base:"",pos:"v.",zh:"找出位置",p:8,emoji:"📍",ex:"Mom is making telephone calls trying to locate Patches.",hl:"locate"},
+{word:"contact",base:"",pos:"v.",zh:"聯絡",p:8,emoji:"📞",ex:"People can contact us if they see Patches.",hl:"contact"},
+{word:"irresponsible",base:"",pos:"adj.",zh:"不負責任的",p:9,emoji:"🙈",ex:"She's still disappointed in me for being so irresponsible.",hl:"irresponsible"},
+{word:"neighborhood",base:"",pos:"n.",zh:"社區、附近一帶",p:9,emoji:"🏙️",ex:"We walk around the neighborhood to hang them up.",hl:"neighborhood"},
+{word:"elsewhere",base:"",pos:"adv.",zh:"別的地方",p:10,emoji:"🧭",ex:"We leave to look elsewhere.",hl:"elsewhere"},
+{word:"accidentally",base:"",pos:"adv.",zh:"不小心地",p:13,emoji:"😬",ex:"I accidentally left the backyard gate open.",hl:"accidentally"},
+{word:"apology",base:"",pos:"n.",zh:"道歉",p:16,emoji:"🙇",ex:"Thank you for the apology, Marcus.",hl:"apology"}
+]}
+];
+
+var PALETTE=['#60a5fa','#a78bfa','#f0c040','#34d399','#f97316','#fb7185','#38bdf8','#e879f9','#2dd4bf','#f87171'];
+BOOKS.forEach(function(b){
+  ['know','recite'].forEach(function(m){
+    b[m].forEach(function(v,i){v.c=PALETTE[i%PALETTE.length];v.book=b.id;v.mode=m;v.key=b.id+'|'+m+'|'+v.word+'|'+v.p;});
+  });
+});
+var MODES={
+  know:{label:'👀 認識用',desc:'看得懂就好：每頁的難字',tabs:['browse','en','listen']},
+  recite:{label:'🧠 背誦用',desc:'要會拼、會寫的字',tabs:['browse','en','zh','listen','spell','dict']}
+};
+var mode='know';
+var selBooks=[BOOKS[BOOKS.length-1].id];
+var curTab='browse';
+
+function bookName(b){return (b.wk?b.wk+' ':'')+b.title;}
+function bookById(id){for(var i=0;i<BOOKS.length;i++){if(BOOKS[i].id===id)return BOOKS[i];}return null;}
+function selectedBooks(){return BOOKS.filter(function(b){return selBooks.indexOf(b.id)>-1;});}
+function getVocab(){var r=[];selectedBooks().forEach(function(b){r=r.concat(b[mode]);});return r;}
+function allOfMode(){var r=[];BOOKS.forEach(function(b){r=r.concat(b[mode]);});return r;}
+
+var STARS={};
+try{STARS=JSON.parse(localStorage.getItem('raz_stars')||'{}');}catch(e){STARS={};}
+function saveStars(){try{localStorage.setItem('raz_stars',JSON.stringify(STARS));}catch(e){}}
+var starOnly=false,hideZh=false,hideEn=false,bData=[];
+function getActivePool(){
+  var base=getVocab();
+  if(starOnly){var f=base.filter(function(v){return STARS[v.key];});if(f.length)return f;}
+  return base.slice();
+}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+function el(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!==undefined)e.textContent=txt;return e;}
+function emo(v,cls){return document.createTextNode('');} /* 不顯示圖片／emoji */
+
+/* 書中例句，標亮單字 */
+function exLine(v){
+  var d=el('div','ex');
+  var s=v.ex||'',h=v.hl||v.word,i=s.toLowerCase().indexOf(h.toLowerCase());
+  if(i<0){d.textContent=s;return d;}
+  d.appendChild(document.createTextNode(s.slice(0,i)));
+  d.appendChild(el('b','',s.slice(i,i+h.length)));
+  d.appendChild(document.createTextNode(s.slice(i+h.length)));
+  return d;
+}
+function metaLine(v){
+  var m=el('div','meta');
+  if(v.base)m.appendChild(el('span','base','原型 '+v.base));
+  m.appendChild(el('span','pg','p.'+v.p));
+  return m;
+}
+
+/* ---------- Google TTS ---------- */
+var GAPI='AIzaSyDoHC5htiSdKrGqxYJvA5Z7cjSw14YF4SA';
+var audioCache={};
+function speak(word,btn){
+  var sel=document.getElementById('voiceSel');
+  var voiceName=sel?sel.value:'en-US-Journey-F';
+  var langCode=voiceName.indexOf('en-GB')===0?'en-GB':'en-US';
+  var cacheKey=voiceName+'|'+word;
+  if(btn)btn.classList.add('sp');
+  function playB64(b64){
+    try{
+      var bin=atob(b64),arr=new Uint8Array(bin.length);
+      for(var i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i);
+      var url=URL.createObjectURL(new Blob([arr],{type:'audio/mp3'}));
+      var a=new Audio(url);a.playbackRate=0.9;
+      a.onended=a.onerror=function(){if(btn)btn.classList.remove('sp');URL.revokeObjectURL(url);};
+      a.play();
+    }catch(e){if(btn)btn.classList.remove('sp');}
+  }
+  if(audioCache[cacheKey]){playB64(audioCache[cacheKey]);return;}
+  fetch('https://texttospeech.googleapis.com/v1/text:synthesize?key='+GAPI,{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({input:{text:word},voice:{languageCode:langCode,name:voiceName},audioConfig:{audioEncoding:'MP3',speakingRate:0.9}})
+  }).then(function(r){return r.json();}).then(function(d){
+    if(d.audioContent){audioCache[cacheKey]=d.audioContent;playB64(d.audioContent);}
+    else{if(btn)btn.classList.remove('sp');}
+  }).catch(function(){if(btn)btn.classList.remove('sp');});
+}
+function mkSpk(word,cls){
+  var b=el('button',cls||'spk','🔊');
+  (function(w){b.addEventListener('click',function(e){e.stopPropagation();speak(w,this);});})(word);
+  return b;
+}
+
+/* ---------- Mode / books / header ---------- */
+function buildModeBar(){
+  var bar=document.getElementById('mode-bar');
+  Object.keys(MODES).forEach(function(k){
+    var b=el('button','mode-btn',MODES[k].label);b.id='mbtn-'+k;
+    (function(kk){b.addEventListener('click',function(){setMode(kk);});})(k);
+    bar.appendChild(b);
+  });
+}
+function setMode(k){
+  mode=k;
+  if(MODES[mode].tabs.indexOf(curTab)<0)curTab='browse';
+  applySelection();
+}
+function buildBookBar(){
+  var bar=document.getElementById('book-bar');
+  while(bar.firstChild)bar.removeChild(bar.firstChild);
+  BOOKS.forEach(function(b){
+    var btn=el('button','week-btn',b.emoji+' '+(b.wk?b.wk+' · ':'')+b.level+' · '+b.title);
+    btn.id='bbtn-'+b.id;
+    (function(id){btn.addEventListener('click',function(){toggleBook(id);});})(b.id);
+    bar.appendChild(btn);
+  });
+  if(BOOKS.length>1){
+    var all=el('button','week-btn all','✨ All');all.id='bbtn-all';
+    all.addEventListener('click',function(){selBooks=BOOKS.map(function(b){return b.id;});applySelection();});
+    bar.appendChild(all);
+  }
+}
+function refreshBars(){
+  BOOKS.forEach(function(b){
+    var btn=document.getElementById('bbtn-'+b.id),on=selBooks.indexOf(b.id)>-1;
+    btn.className='week-btn'+(on?' on':'');
+    btn.style.background=on?b.color:'';btn.style.borderColor=on?b.color:'';
+  });
+  var a=document.getElementById('bbtn-all');
+  if(a)a.className='week-btn all'+(selBooks.length===BOOKS.length?' on':'');
+  Object.keys(MODES).forEach(function(k){document.getElementById('mbtn-'+k).className='mode-btn'+(k===mode?' on':'');});
+  document.getElementById('mode-desc').textContent=MODES[mode].desc;
+  ['browse','en','zh','listen','spell','dict'].forEach(function(x){
+    document.getElementById('t-'+x).style.display=MODES[mode].tabs.indexOf(x)>-1?'':'none';
+  });
+}
+function toggleBook(id){
+  var i=selBooks.indexOf(id);
+  if(i>-1){if(selBooks.length===1)return;selBooks.splice(i,1);}else selBooks.push(id);
+  applySelection();
+}
+function updateHeader(){
+  var sel=selectedBooks();
+  var t=document.getElementById('h-title'),s=document.getElementById('h-sub'),c=document.getElementById('h-count');
+  if(sel.length===1)t.textContent=bookName(sel[0]);
+  else if(sel.length===BOOKS.length)t.textContent='All RAZ Books';
+  else t.textContent=sel.length+' RAZ Books';
+  s.textContent='RAZ · '+sel.map(function(b){return 'Level '+b.level;}).filter(function(x,i,a){return a.indexOf(x)===i;}).join(' + ')+' · '+(mode==='know'?'認識用':'背誦用');
+  c.textContent='📚 '+getVocab().length+' 個單字';
+}
+function showTab(name){
+  curTab=name;
+  ['browse','en','zh','listen','spell','dict'].forEach(function(x){
+    document.getElementById('t-'+x).className='tab'+(x===name?' on':'');
+    document.getElementById('p-'+x).className='panel'+(x===name?' on':'');
+  });
+}
+function applySelection(){
+  refreshBars();updateHeader();
+  hideZh=false;hideEn=false;
+  bData=getVocab().slice();
+  updateBrowseBtns();renderBrowse();restartAll();showTab(curTab);
+}
+function restartAll(){startFlash('en');startFlash('zh');startListen();startSpell();startDict();}
+
+/* ---------- Browse ---------- */
+function updateBrowseBtns(){
+  document.getElementById('b-star').className='btn'+(starOnly?' on':'');
+  document.getElementById('b-hz').textContent=hideZh?'👀 顯示中文':'🙈 隱藏中文';
+  document.getElementById('b-he').textContent=hideEn?'👀 顯示英文':'🙈 隱藏英文';
+}
+function toggleStarOnly(){starOnly=!starOnly;updateBrowseBtns();renderBrowse();restartAll();}
+function shuffleBrowse(){bData=shuffle(bData);renderBrowse();}
+function sortByPage(){bData=getVocab().slice();renderBrowse();}
+function toggleHide(w){if(w==='zh')hideZh=!hideZh;else hideEn=!hideEn;updateBrowseBtns();renderBrowse();}
+function buildCard(v,i){
+  var card=el('div','card');
+  card.style.borderTop='3px solid '+v.c;
+  card.addEventListener('click',function(){card.classList.toggle('rev');});
+  var star=el('button','star'+(STARS[v.key]?' on':''),'★');
+  star.addEventListener('click',function(e){
+    e.stopPropagation();
+    if(STARS[v.key])delete STARS[v.key];else STARS[v.key]=1;
+    saveStars();star.classList.toggle('on');
+    if(starOnly){renderBrowse();restartAll();}
+  });
+  card.appendChild(star);
+  card.appendChild(emo(v,'emo'));
+  var body=el('div','body');
+  if(selBooks.length>1){
+    var bk=bookById(v.book),wt=el('div','wtag',(bk.wk?bk.wk+' · ':'')+bk.level+' · '+bk.title);
+    wt.style.color=bk.color;wt.style.border='1px solid '+bk.color;body.appendChild(wt);
+  }
+  body.appendChild(el('div','num','#'+(i+1)));
+  var row=el('div','row');
+  row.appendChild(el('div','cword',v.word));
+  row.appendChild(mkSpk(v.word));
+  body.appendChild(row);
+  body.appendChild(el('div','cpos',v.pos));
+  body.appendChild(metaLine(v));
+  body.appendChild(document.createElement('hr'));
+  body.appendChild(el('div','czh',v.zh));
+  body.appendChild(exLine(v));
+  card.appendChild(body);
+  return card;
+}
+function renderBrowse(){
+  var g=document.getElementById('grid');
+  while(g.firstChild)g.removeChild(g.firstChild);
+  g.className='grid'+(hideZh?' hz':'')+(hideEn?' he':'');
+  var list=starOnly?bData.filter(function(v){return STARS[v.key];}):bData;
+  if(!list.length){g.appendChild(el('div','empty','還沒有加星號的單字，先點卡片右上角的 ★ 吧！'));return;}
+  list.forEach(function(v,i){g.appendChild(buildCard(v,i));});
+}
+
+/* ---------- Flashcards ---------- */
+var FC={en:{q:[],i:0,flipped:false,known:0,unk:[]},zh:{q:[],i:0,flipped:false,known:0,unk:[]}};
+function startFlash(m,list){var s=FC[m];s.q=shuffle(list||getActivePool());s.i=0;s.flipped=false;s.known=0;s.unk=[];renderFlash(m);}
+function flashMark(m,ok){var s=FC[m];if(ok)s.known++;else s.unk.push(s.q[s.i]);s.i++;s.flipped=false;renderFlash(m);}
+function renderFlash(m){
+  var box=document.getElementById('fc-'+m);
+  while(box.firstChild)box.removeChild(box.firstChild);
+  var s=FC[m];
+  if(s.i>=s.q.length){
+    var res=el('div','res');
+    res.appendChild(el('div','big',s.known+' / '+s.q.length));
+    res.appendChild(el('div','msg',s.unk.length?'還有 '+s.unk.length+' 個要再加強':'全部都記住了，太棒了！🎉'));
+    var act=el('div','actions'),again=el('button','btn btn-gold','🔄 重來');
+    again.addEventListener('click',function(){startFlash(m);});act.appendChild(again);
+    if(s.unk.length){var rb=el('button','btn','📌 只練不熟的（'+s.unk.length+'）');rb.addEventListener('click',function(){startFlash(m,s.unk.slice());});act.appendChild(rb);}
+    res.appendChild(act);box.appendChild(res);return;
+  }
+  var v=s.q[s.i];
+  box.appendChild(el('div','prog',(s.i+1)+' / '+s.q.length));
+  var card=el('div','fcard');
+  card.addEventListener('click',function(){s.flipped=!s.flipped;renderFlash(m);});
+  card.appendChild(emo(v,'fc-emo'));
+  var front=(m==='en')!==s.flipped; // true = 顯示英文
+  if(front){
+    card.appendChild(el('div','fc-word',v.word));
+    card.appendChild(el('div','fc-pos',v.pos));
+    card.appendChild(mkSpk(v.word));
+    if(m==='en')card.appendChild(exLine(v));
+  }else{
+    card.appendChild(el('div','fc-zh'+(m==='zh'?' gold':''),v.zh));
+    if(m==='en')card.appendChild(mkSpk(v.word));
+  }
+  if(s.flipped)card.appendChild(metaLine(v));
+  else card.appendChild(el('div','hint','點一下翻面'));
+  box.appendChild(card);
+  if(s.flipped){
+    var a2=el('div','actions'),ok=el('button','btn btn-green','✓ 我認識！'),no=el('button','btn btn-red','✗ 還不熟');
+    ok.addEventListener('click',function(){flashMark(m,true);});
+    no.addEventListener('click',function(){flashMark(m,false);});
+    a2.appendChild(ok);a2.appendChild(no);box.appendChild(a2);
+  }
+}
+
+/* ---------- Listening ---------- */
+var LS={q:[],i:0,score:0,answered:false,wrong:[]};
+function startListen(list){LS.q=shuffle(list||getActivePool());LS.i=0;LS.score=0;LS.answered=false;LS.wrong=[];renderListen();}
+function renderListen(){
+  var box=document.getElementById('listen-box');
+  while(box.firstChild)box.removeChild(box.firstChild);
+  if(LS.i>=LS.q.length){
+    var pct=Math.round(LS.score/LS.q.length*100),res=el('div','res');
+    res.appendChild(el('div','big',LS.score+' / '+LS.q.length));
+    res.appendChild(el('div','msg','正確率 '+pct+'%　'+(pct===100?'滿分！🏆':pct>=80?'很棒！👏':pct>=60?'不錯，再加油！💪':'多聽幾次就會進步！📚')));
+    var act=el('div','actions'),again=el('button','btn btn-gold','🔄 重新測驗');
+    again.addEventListener('click',function(){startListen();});act.appendChild(again);
+    if(LS.wrong.length){var rb=el('button','btn','📌 只練答錯的（'+LS.wrong.length+'）');rb.addEventListener('click',function(){startListen(LS.wrong.slice());});act.appendChild(rb);}
+    res.appendChild(act);box.appendChild(res);return;
+  }
+  LS.answered=false;
+  var v=LS.q[LS.i];
+  box.appendChild(el('div','prog',(LS.i+1)+' / '+LS.q.length));
+  box.appendChild(el('div','hint','聽發音，選出正確的中文意思'));
+  box.appendChild(mkSpk(v.word,'spk bigspk'));
+  var seen={},pool=[];
+  shuffle(allOfMode().concat(BOOKS.reduce(function(r,b){return r.concat(b.know);},[]))).forEach(function(x){
+    if(x.zh!==v.zh&&x.word!==v.word&&!seen[x.zh]){seen[x.zh]=1;pool.push(x);}
+  });
+  var opts=shuffle(pool.slice(0,3).concat([v]));
+  var wrap=el('div','opts'),nextBox=el('div','actions');
+  opts.forEach(function(o){
+    var b=el('button','opt',o.zh);
+    b.addEventListener('click',function(){
+      if(LS.answered)return;LS.answered=true;
+      if(o===v){b.classList.add('ok');LS.score++;}
+      else{b.classList.add('no');LS.wrong.push(v);
+        var all=wrap.querySelectorAll('.opt');for(var k=0;k<all.length;k++){if(all[k].textContent===v.zh)all[k].classList.add('ok');}}
+      speak(v.word,null);
+      wrap.parentNode.insertBefore(exLine(v),nextBox);
+      var nb=el('button','btn btn-gold',LS.i+1>=LS.q.length?'看成績':'下一題 →');
+      nb.addEventListener('click',function(){LS.i++;renderListen();});nextBox.appendChild(nb);
+    });
+    wrap.appendChild(b);
+  });
+  box.appendChild(wrap);box.appendChild(nextBox);
+  setTimeout(function(){if(document.getElementById('p-listen').classList.contains('on'))speak(v.word,null);},400);
+}
+
+/* ---------- Spelling ---------- */
+var SQ=[],spIdx=0,spScore=0,spAnswered=false,spWrong=[];
+function startSpell(list){SQ=shuffle(list||getActivePool());spIdx=0;spScore=0;spAnswered=false;spWrong=[];renderSpellQ();}
+function renderSpellQ(){
+  var box=document.getElementById('spell-box');
+  while(box.firstChild)box.removeChild(box.firstChild);
+  if(spIdx>=SQ.length){
+    var res=el('div','res');
+    res.appendChild(el('div','big',spScore+' / '+SQ.length));
+    res.appendChild(el('div','msg','答對 '+spScore+' 個，答錯 '+(SQ.length-spScore)+' 個'));
+    var act=el('div','actions'),again=el('button','btn btn-gold','🔄 重新測驗');
+    again.addEventListener('click',function(){startSpell();});act.appendChild(again);
+    if(spWrong.length){var rb=el('button','btn','📌 只練答錯的（'+spWrong.length+' 個）');rb.addEventListener('click',function(){startSpell(spWrong.slice());});act.appendChild(rb);}
+    res.appendChild(act);box.appendChild(res);return;
+  }
+  spAnswered=false;
+  var v=SQ[spIdx];
+  box.appendChild(el('div','prog',(spIdx+1)+' / '+SQ.length));
+  box.appendChild(emo(v,'fc-emo'));
+  box.appendChild(el('div','sp-zh',v.zh));
+  box.appendChild(el('div','hint',v.pos+'　聽發音，拼出英文'));
+  box.appendChild(mkSpk(v.word,'spk bigspk'));
+  var lw=el('div','letters'),inputs=[];
+  v.word.split('').forEach(function(ch){
+    if(ch===' '){lw.appendChild(el('div','gap','·'));inputs.push(null);}
+    else{
+      var inp=document.createElement('input');
+      inp.type='text';inp.maxLength=1;inp.className='lt';
+      ['autocomplete','autocapitalize','autocorrect'].forEach(function(a){inp.setAttribute(a,'off');});
+      inp.setAttribute('spellcheck','false');
+      lw.appendChild(inp);inputs.push(inp);
+    }
+  });
+  var real=inputs.filter(function(x){return x;});
+  var act2=el('div','actions'),chk=el('button','btn btn-gold','確認'),nextBox=el('div','actions');
+  real.forEach(function(inp,idx){
+    inp.addEventListener('input',function(){if(inp.value&&idx<real.length-1)real[idx+1].focus();});
+    inp.addEventListener('keydown',function(e){
+      if(e.key==='Backspace'&&!inp.value&&idx>0)real[idx-1].focus();
+      else if(e.key==='Enter')checkSpell(v,inputs,chk,nextBox);
+    });
+  });
+  box.appendChild(lw);
+  chk.addEventListener('click',function(){checkSpell(v,inputs,chk,nextBox);});
+  act2.appendChild(chk);box.appendChild(act2);box.appendChild(nextBox);
+  setTimeout(function(){if(document.getElementById('p-spell').classList.contains('on')){speak(v.word,null);if(real[0])real[0].focus();}},400);
+}
+function checkSpell(v,inputs,chk,nextBox){
+  if(spAnswered)return;spAnswered=true;
+  var letters=v.word.split(''),allOk=true;
+  inputs.forEach(function(inp,i){
+    if(!inp)return;
+    if((inp.value||'').toLowerCase()===letters[i].toLowerCase())inp.classList.add('ok');
+    else{allOk=false;inp.classList.add('no');inp.value=letters[i];}
+    inp.readOnly=true;
+  });
+  chk.style.display='none';
+  if(allOk)spScore++;else spWrong.push(v);
+  speak(v.word,null);
+  nextBox.parentNode.insertBefore(exLine(v),nextBox);
+  var nb=el('button','btn btn-gold',spIdx+1>=SQ.length?'看成績':'下一題 →');
+  nb.addEventListener('click',function(){spIdx++;renderSpellQ();});nextBox.appendChild(nb);
+}
+
+/* ---------- Dictation ---------- */
+var DQ=[],dIdx=0;
+function startDict(){DQ=shuffle(getActivePool());dIdx=0;renderDict();}
+function renderDict(){
+  var box=document.getElementById('dict-box');
+  while(box.firstChild)box.removeChild(box.firstChild);
+  if(dIdx>=DQ.length){
+    var res=el('div','res');
+    res.appendChild(el('div','big','解答'));
+    res.appendChild(el('div','msg','共 '+DQ.length+' 題，依聽寫順序排列'));
+    var list=el('div','anslist');
+    DQ.forEach(function(v,i){
+      var row=el('div','ansrow');
+      row.appendChild(el('div','ansno',String(i+1)));
+      var mid=el('div','ansmid');
+      mid.appendChild(el('div','answord',v.word));
+      mid.appendChild(el('div','anszh',v.pos+'　'+v.zh+'　p.'+v.p));
+      row.appendChild(mid);row.appendChild(mkSpk(v.word));list.appendChild(row);
+    });
+    res.appendChild(list);
+    var act=el('div','actions'),again=el('button','btn btn-gold','🔄 重新打亂再聽寫');
+    again.addEventListener('click',startDict);act.appendChild(again);
+    res.appendChild(act);box.appendChild(res);return;
+  }
+  var v=DQ[dIdx];
+  box.appendChild(el('div','prog','第 '+(dIdx+1)+' 題 / 共 '+DQ.length+' 題'));
+  box.appendChild(el('div','hint','聽發音，寫在紙上'));
+  box.appendChild(mkSpk(v.word,'spk bigspk'));
+  var a2=el('div','actions'),nb=el('button','btn btn-gold',dIdx+1>=DQ.length?'看全部解答':'下一題 →');
+  nb.addEventListener('click',function(){dIdx++;renderDict();});a2.appendChild(nb);box.appendChild(a2);
+  setTimeout(function(){if(document.getElementById('p-dict').classList.contains('on'))speak(v.word,null);},400);
+}
+
+/* ---------- Init ---------- */
+buildModeBar();
+buildBookBar();
+applySelection();
+
+</script>
+</body>
+</html>
